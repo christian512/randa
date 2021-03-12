@@ -88,11 +88,10 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    // add ridge to output and to newly found ridges
    std::set<Row<Integer>> output;
    std::set<Row<Integer>> new_ridges;
-   for (const auto &ridge : ridges){
+   for (const auto &ridge : ridges) {
       output.insert(ridge);
       new_ridges.insert(ridge);
    }
-   // while there are no new ridges found
    while (!new_ridges.empty()) {
       // take one new face
       auto ridge = *new_ridges.begin();
@@ -105,6 +104,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
       for (const auto &sub_ridge : sub_ridges) {
          const auto new_row = rotate(vertices_on_facet, furthest_vertex, ridge, sub_ridge);
          const bool is_in = output.find(new_row) != output.end();
+         // if this ridge was not found, add it to the output.
          if (!is_in) {
             output.insert(new_row);
             new_ridges.insert(new_row);
