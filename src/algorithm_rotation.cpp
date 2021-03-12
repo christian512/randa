@@ -85,13 +85,13 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    // get the vertices on the face and a single ridge
    const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
    auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
-   auto ridge = ridges[0];
-
    // add ridge to output and to newly found ridges
    std::set<Row<Integer>> output;
-   output.insert(ridge);
    std::set<Row<Integer>> new_ridges;
-   new_ridges.insert(ridge);
+   for (const auto &ridge : ridges){
+      output.insert(ridge);
+      new_ridges.insert(ridge);
+   }
    // while there are no new ridges found
    while (!new_ridges.empty()) {
       // take one new face
