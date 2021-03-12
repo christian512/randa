@@ -51,6 +51,37 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer>& matrix,
    return classes(output, maps, tag);
 }
 
+template <typename Integer, typename TagType>
+Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer>& matrix,
+                                           const Row<Integer>& input,
+                                           const Maps& maps,
+                                           TagType tag,
+                                           int curr_recursion_level,
+                                           int max_recursion_level)
+{
+   // as the first step of the rotation, the furthest Vertex w.r.t. the input facet is calculated.
+   // this will be the same vertex for all neighbouring ridges, hence, only needs to be computed once.
+   const auto furthest_vertex = furthestVertex(matrix, input);
+   Inequalities<Integer> ridges;
+   if ( curr_recursion_level == max_recursion_level){
+      ridges = getRidges(matrix, input);
+   } else {
+      ridges = getRidges(matrix, input);
+      // TODO: Here we need the recursive call
+      // get a single ridge
+      // get vertices on current face (input) and generate new matrix (which consists of the vertices on face)
+      // recursive call of this function to get all faces
+
+   }
+   std::set<Row<Integer>> output;
+   for ( const auto& ridge : ridges )
+   {
+      const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
+      output.insert(new_row);
+   }
+   return classes(output, maps, tag);
+}
+
 namespace
 {
    template <typename Integer>

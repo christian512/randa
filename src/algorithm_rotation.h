@@ -18,6 +18,9 @@ namespace panda
       /// Returns all adjacent rows (or class representatives) of a row by using the rotation algorithm.
       template <typename Integer, typename TagType>
       Facets<Integer> rotation(const Vertices<Integer>&, const Facet<Integer>&, const Maps&, TagType);
+      /// Returns all adjacent rows (or class representatives) of a row using a recursive rotation algorithm
+      template <typename Integer, typename TagType>
+      Facets<Integer> rotation_recursive(const Vertices<Integer>&, const Facet<Integer>&, const Maps&, TagType, int, int);
    }
 }
 

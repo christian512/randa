@@ -53,8 +53,9 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
 {
    const auto node_count = mpi::getSession().getNumberOfNodes();
    const auto thread_count = concurrency::numberOfThreads(argc, argv);
-   // TODO: Get the maximum recursion level from the function call
-   const auto recursion_depth = recursion::recursionDepth(argc, argv);
+   // Get the maximum recursion level from the function call
+   const auto max_recursion_depth = recursion::recursionDepth(argc, argv);
+   int curr_recursion_depth = 0;
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
@@ -75,7 +76,8 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             {
                break;
             }
-            const auto jobs = algorithm::rotation(input, job, maps, tag);
+            // TODO: Here we should call a recursive function instead
+            const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth);
             job_manager.put(jobs);
          }
       });
