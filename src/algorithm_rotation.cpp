@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "algorithm_classes.h"
 #include "algorithm_fourier_motzkin_elimination.h"
@@ -66,11 +67,14 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer>& matr
    if ( curr_recursion_level == max_recursion_level){
       ridges = getRidges(matrix, input);
    } else {
-      // ridges = getRidges(matrix, input);
-      // TODO: Here we need the recursive call
+      // Generate a single face by fourierMotzkinHeuristic functionality
       auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
+      // TODO: Can we make use of multiple facets here?
       auto facet = facets[0];
-      const auto vertices_on_facet = verticesWithZeroDistance(matrix, facet);
+      // Get the vertices on the input face
+      const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
+      assert( !vertices_on_facet.empty());
+      // Get all ridges by rotation
       ridges = panda::algorithm::rotation_recursive(vertices_on_facet, facet, maps, tag, curr_recursion_level+1, max_recursion_level);
    }
    std::set<Row<Integer>> output;
