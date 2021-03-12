@@ -66,12 +66,12 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer>& matr
    if ( curr_recursion_level == max_recursion_level){
       ridges = getRidges(matrix, input);
    } else {
-      ridges = getRidges(matrix, input);
+      // ridges = getRidges(matrix, input);
       // TODO: Here we need the recursive call
-      // get a single ridge
-      // get vertices on current face (input) and generate new matrix (which consists of the vertices on face)
-      // recursive call of this function to get all faces
-
+      auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
+      auto facet = facets[0];
+      const auto vertices_on_facet = verticesWithZeroDistance(matrix, facet);
+      ridges = panda::algorithm::rotation_recursive(vertices_on_facet, facet, maps, tag, curr_recursion_level+1, max_recursion_level);
    }
    std::set<Row<Integer>> output;
    for ( const auto& ridge : ridges )

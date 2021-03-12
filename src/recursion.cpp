@@ -39,17 +39,17 @@ int panda::recursion::recursionDepth(int argc, char** argv)
       {
          return interpretParameter(argv[i] + 3);
       }
-      else if ( std::strncmp(argv[i], "--recursion=", 10) == 0 )
+      else if ( std::strncmp(argv[i], "--recursion=", 12) == 0 )
       {
-         return interpretParameter(argv[i] + 10);
+         return interpretParameter(argv[i] + 12);
       }
       else if ( std::strncmp(argv[i], "-r", 2) == 0 || std::strncmp(argv[i], "--r", 3) == 0 )
       {
          throw std::invalid_argument("Illegal parameter. Did you mean \"-r <n>\" or \"--recursion=<n>\"?");
       }
    }
-   const auto default_value = 1;
-   return (default_value > 0) ? default_value : 1;
+   const auto default_value = 0;
+   return default_value;
 }
 
 namespace
@@ -73,10 +73,10 @@ namespace
          message += " needs an integral parameter.";
          throw std::invalid_argument(message);
       }
-      if ( n <= 0 )
+      if ( n < 0 )
       {
          std::string message = "Command line option \"-r <n>\" / \"--recursion=<n>\"";
-         message += " needs an integral parameter greater zero.";
+         message += " needs a positive integral parameter.";
          throw std::invalid_argument(message);
       }
       return n;
