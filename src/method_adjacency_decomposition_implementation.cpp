@@ -30,13 +30,13 @@ using namespace panda;
 namespace
 {
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer, template <typename, typename> class JobManagerType>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer>
    std::future<void> initializePool(JobManager<Integer, tag::facet>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&);
@@ -49,7 +49,7 @@ namespace
 }
 
 template <template <typename, typename> class JobManagerType, typename Integer, typename TagType>
-void panda::implementation::adjacencyDecomposition(int argc, char** argv, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data, TagType tag)
+void panda::implementation::adjacencyDecomposition(int argc, char** argv, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data,TagType tag)
 {
    const auto node_count = mpi::getSession().getNumberOfNodes();
    const auto thread_count = concurrency::numberOfThreads(argc, argv);
@@ -88,7 +88,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
 namespace
 {
    template <typename Integer, typename Callable>
-   std::pair<Equations<Integer>, Maps> reduce(const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data, Callable&& callable)
+   std::pair<Equations<Integer>, Maps> reduce(const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data, Callable&& callable)
    {
       const auto& vertices = std::get<0>(data);
       const auto& names = std::get<1>(data);
@@ -104,7 +104,7 @@ namespace
    }
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       return reduce(data, [](const Matrix<Integer>& equations, const Names& names)
       {
@@ -115,13 +115,13 @@ namespace
    }
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       return reduce(data, [](const Matrix<Integer>&, const Names&) {});
    }
 
    template <typename Integer, template <typename, typename> class JobManagerType>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       const auto& original_maps = std::get<2>(data);
       return std::make_pair(Equations<Integer>{}, original_maps);

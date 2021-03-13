@@ -20,16 +20,16 @@ namespace panda
    {
       /// Reads a conical/convex hull description with optional names and maps.
       template <typename Integer>
-      std::tuple<Vertices<Integer>, Names, Maps, Inequalities<Integer>> vertices(int, char**);
+      std::tuple<Vertices<Integer>, Names, Maps, Inequalities<Integer>, VertexMaps> vertices(int, char**);
       /// Reads an inequality description with optional names and maps.
       template <typename Integer>
-      std::tuple<Inequalities<Integer>, Names, Maps, Vertices<Integer>> inequalities(int, char**);
+      std::tuple<Inequalities<Integer>, Names, Maps, Vertices<Integer>, VertexMaps> inequalities(int, char**);
 
       // explicit template instantiations
       template <>
-      std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> vertices<int>(int, char**);
+      std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, VertexMaps> vertices<int>(int, char**);
       template <>
-      std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> inequalities<int>(int, char**);
+      std::tuple<Inequalities<int>, Names, Maps, Vertices<int>, VertexMaps> inequalities<int>(int, char**);
    }
 }
 
