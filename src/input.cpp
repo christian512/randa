@@ -25,6 +25,7 @@
 #include "input_dimension.h"
 #include "input_keywords.h"
 #include "input_map.h"
+#include "input_vertexmap.h"
 #include "input_names.h"
 #include "input_order.h"
 #include "input_validity.h"
@@ -125,6 +126,7 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
    std::size_t dimension = std::numeric_limits<std::size_t>::max();
    Names names;
    Maps maps;
+   VertexMaps vertex_maps;
    if ( !implementation::containsKeywords(file) )
    {
       throw std::invalid_argument("An inner description must be given in PANDA format.");
@@ -145,8 +147,7 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
       }
       else if ( implementation::isKeywordVertexMaps(token))
       {
-         // TODO: Implement reading of VertexMaps from the file
-         continue;
+         vertex_maps = implementation::vertexMaps(file);
       }
       else if ( implementation::isKeywordConvexHull(token) )
       {
