@@ -55,11 +55,14 @@ namespace {
       VertexMap vertex_map;
       // we assume that each entry has length of number of vertices provided
       skipWhitespace(stream);
-      while( stream && !isEndOfLine(stream) && !isEndOfFile(stream)){
-         // TODO: fill the map with entries
-         std::string token;
-         stream >> token;
-         std::cerr << 'Token: ' << token;
+      for (int tmp; stream >> tmp; )
+      {
+         vertex_map.push_back(tmp);
+         skipWhitespace(stream);
+         if ( stream.peek() == '\n' )
+         {
+            break;
+         }
       }
       return vertex_map;
    }
