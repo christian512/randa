@@ -59,6 +59,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
+   const auto& vertex_maps = std::get<4>(data);
    JobManagerType<Integer, TagType> job_manager(names, node_count, thread_count);
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
@@ -76,7 +77,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             {
                break;
             }
-            // TODO: Here we should call a recursive function instead
+            // TODO: Use the vertex maps here for an equivalence check
             const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth);
             job_manager.put(jobs);
          }
