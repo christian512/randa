@@ -165,6 +165,18 @@ bool panda::input::implementation::isKeywordMaps(const std::string& string) noex
            string == "Maps:");
 }
 
+bool panda::input::implementation::isKeywordVertexMaps(const std::string& string) noexcept
+{
+   return (string == "VERTEXMAPS" ||
+           string == "VERTEXMAPS:" ||
+           string == "VERTEXMAP_SECTION" ||
+           string == "VERTEXMAP_SECTION:" ||
+           string == "VERTEXMAPS_SECTION" ||
+           string == "VERTEXMAPS_SECTION:" ||
+           string == "VertexMaps" ||
+           string == "VertexMaps:");
+}
+
 bool panda::input::implementation::isKeywordNames(const std::string& string) noexcept
 {
    return (string == "INDEX" ||

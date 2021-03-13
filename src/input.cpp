@@ -143,6 +143,11 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
       {
          maps = implementation::maps(file, names);
       }
+      else if ( implementation::isKeywordVertexMaps(token))
+      {
+         // TODO: Implement reading of VertexMaps from the file
+         continue;
+      }
       else if ( implementation::isKeywordConvexHull(token) )
       {
          conv = readVerticesConvex(argc, argv, file, maps);
