@@ -60,7 +60,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
    const auto& vertex_maps = std::get<4>(data);
-   // TODO: Add vertices and vertex maps to the jobmanager here.
+   // Here the Jobmanager is initialized with the vertices (i.e. input) and the symmetries (i.e. vertex maps).
    JobManagerType<Integer, TagType> job_manager(names, node_count, thread_count, input, vertex_maps);
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
@@ -79,7 +79,6 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                break;
             }
             const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth);
-            // TODO: use the new put functions with vertices and vertex_maps
             job_manager.put(jobs);
          }
       });

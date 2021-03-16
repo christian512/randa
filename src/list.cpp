@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "algorithm_row_operations.h"
+#include "algorithm_equivalence.h"
 
 using namespace panda;
 
@@ -108,7 +109,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    std::lock_guard<std::mutex> lock(mutex);
    Iterator it;
    bool added;
-   // TODO: Add the equivalence check here
+   // TODO: Insert equivalence check here
    std::tie(it, added) = rows.insert(row);
    if ( added )
    {

@@ -44,3 +44,9 @@ std::set<int> panda::algorithm::mapVerticesPolytope(std::set<int> indicesVertice
    }
    return indicesVerticesPoly;
 }
+
+template <typename Integer>
+bool panda::algorithm::equivalenceFaceToFace(const Row<Integer>& row_one, const Row<Integer>& row_two, const Vertices<Integer>& vertices,
+                                             const VertexMaps& vertex_maps) {
+   return true;
+}
