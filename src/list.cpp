@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <numeric>
+
 
 #include "algorithm_row_operations.h"
 #include "algorithm_equivalence.h"
@@ -114,12 +116,23 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    // TODO: Insert equivalence check here -> for now manually
    // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
    // So we implement the functions here.
-   // Get indices of vertices on the face(row)
-   // Get indices of vertices on the face for each facet in rows
-   // check for equivalence by the maps
+   std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
+   for (auto& row_stored : rows)
+   {
+      std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
+      // check equivalence of the two polytopes
+      if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)) {
+         equiv = true;
+         break;
+      }
+   }
+   if ( !equiv ) {
+      std::tie(it, added) = rows.insert(row);
+   } else {
+      added = false;
+   }
 
-   std::tie(it, added) = rows.insert(row);
-   if ( added )
+   if ( added && !equiv)
    {
       if ( std::is_same<TagType, tag::facet>::value )
       {
@@ -191,9 +204,28 @@ bool panda::List<Integer, TagType>::empty() const
 }
 
 template <typename Integer, typename TagType>
-std::set<int> panda::List<Integer, TagType>::indicesVerticesOnFace(const Row<Integer>& facet, const Vertices<Integer>& vertices)
+std::set<int> panda::List<Integer, TagType>::indicesVerticesOnFace(const Row<Integer>& facet, const Vertices<Integer>& vertices) const
 {
-   std::set<int> result;
-   return result;
-   // TODO: Implement the calculation of vertices on facet
+   std::set<int> selection;
+   for ( int i = 0; i < vertices.size(); i++){
+      Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), facet.cbegin(), Integer{0});
+      if ( dist == 0) {
+         selection.insert(i);
+      }
+   }
+   return selection;
 }
+template <typename Integer, typename TagType>
+bool panda::List<Integer, TagType>::equivalencePolyToPoly(const std::set<int>& indicesVerticesPolyOne, const std::set<int>& indicesVerticesPolyTwo,
+                                                          const VertexMaps& vertex_maps) const{
+         // check for the same number of vertices
+         if (indicesVerticesPolyOne.size() != indicesVerticesPolyTwo.size()) {
+            return false;
+         }
+         // since we are using sets we can simply check for equivalence
+         if ( indicesVerticesPolyOne == indicesVerticesPolyTwo) {
+            return true;
+         }
+         // TODO: Iterate through the vertex maps
+         return false;
+      }

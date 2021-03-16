@@ -54,7 +54,8 @@ namespace panda
          /// checks if all jobs are done.
          bool empty() const;
          /// calculates indices of vertices on a face
-         std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&);
+         std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&) const;
+         bool equivalencePolyToPoly(const std::set<int>&,const std::set<int>&, const VertexMaps&) const;
    };
 }
 
