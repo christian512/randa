@@ -83,7 +83,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
 template <typename Integer, typename TagType>
 void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps) const
 {
-         int x = 1;
+         // TODO: Implement this put function for List.
 }
 template <typename Integer, typename TagType>
 Row<Integer> panda::List<Integer, TagType>::get() const
