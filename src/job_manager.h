@@ -42,6 +42,8 @@ namespace panda
          Communication communication;
          mutable List<Integer, TagType> rows;
          mutable std::list<JoiningThread> request_threads;
+         VertexMaps my_vertex_maps;
+         Vertices<Integer> my_vertices;
       private:
          /// Copy construction is not allowed.
          JobManager(const JobManager<Integer, TagType>&) = delete;

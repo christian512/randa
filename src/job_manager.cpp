@@ -20,6 +20,7 @@ using namespace panda;
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 {
+   // TODO: Here call the put with vertices and vertex_maps
    rows.put(matrix);
    std::cerr << "WATCH OUT: Put new facets without equivalence check size \n";
 }
@@ -107,7 +108,9 @@ panda::JobManager<Integer, TagType>::JobManager(const Names& names_, const int n
         :
         communication(),
         rows(names_),
-        request_threads() // vital implementation detail: threads may access other members, hence, the threads must be destroyed first (Destruction in reverse order of construction).
+        request_threads(), // vital implementation detail: threads may access other members, hence, the threads must be destroyed first (Destruction in reverse order of construction).
+        my_vertices(vertices),
+        my_vertex_maps(vertex_maps)
 {
    #ifdef MPI_SUPPORT
    assert( number_of_processors > 0 );
