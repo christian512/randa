@@ -21,6 +21,7 @@ namespace panda
    EXTERN template void JobManager<Integer, tag::facet>::put(const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template Row<Integer> JobManager<Integer, tag::facet>::get() const;
    EXTERN template JobManager<Integer, tag::facet>::JobManager(const Names&, const int, const int);
+   EXTERN template JobManager<Integer, tag::facet>::JobManager(const Names&, const int, const int, const Vertices<Integer>&, const VertexMaps&);
 
    EXTERN template class JobManager<Integer, tag::vertex>;
    EXTERN template void JobManager<Integer, tag::vertex>::put(const Matrix<Integer>&) const;
@@ -29,5 +30,6 @@ namespace panda
    EXTERN template void JobManager<Integer, tag::vertex>::put(const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template Row<Integer> JobManager<Integer, tag::vertex>::get() const;
    EXTERN template JobManager<Integer, tag::vertex>::JobManager(const Names&, const int, const int);
+   EXTERN template JobManager<Integer, tag::vertex>::JobManager(const Names&, const int, const int, const Vertices<Integer>&, const VertexMaps&);
 }
 

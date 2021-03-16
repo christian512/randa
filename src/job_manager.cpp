@@ -101,6 +101,51 @@ panda::JobManager<Integer, TagType>::JobManager(const Names& names_, const int n
    }
    #endif // MPI_SUPPORT
 }
+
+template <typename Integer, typename TagType>
+panda::JobManager<Integer, TagType>::JobManager(const Names& names_, const int number_of_processors, const int threads_per_processor, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps)
+        :
+        communication(),
+        rows(names_),
+        request_threads() // vital implementation detail: threads may access other members, hence, the threads must be destroyed first (Destruction in reverse order of construction).
+{
+   #ifdef MPI_SUPPORT
+   assert( number_of_processors > 0 );
+   assert( threads_per_processor > 0 );
+   for ( int id = 1; id < number_of_processors; ++id ) // for all nodes except the master
+   {
+      for ( int i = 0; i < threads_per_processor; ++i )
+      {
+         request_threads.emplace_front([&,id]() // capture id by value, as it is a local variable
+         {
+            #ifdef BENCHMARK_LOAD_BALANCING
+            std::size_t count(0);
+            #endif
+            while ( true )
+            {
+               const auto facet = rows.get();
+               communication.toSlave(facet, id);
+               if ( facet.empty() ) // if facet is empty, the slave will stop working.
+               {
+                  break;
+               }
+               #ifdef BENCHMARK_LOAD_BALANCING
+               ++count;
+               #endif
+               const auto results = communication.fromSlave<Integer>(id);
+               // Use the other put function
+               put(results, vertices, vertex_maps);
+            }
+            #ifdef BENCHMARK_LOAD_BALANCING
+            std::stringstream stream;
+            stream << "Node " << id << ": " << count << '\n';
+            std::cerr << stream.str();
+            #endif
+         });
+      }
+   }
+   #endif // MPI_SUPPORT
+}
 #ifndef MPI_SUPPORT
    #pragma GCC diagnostic pop
    #pragma clang diagnostic pop

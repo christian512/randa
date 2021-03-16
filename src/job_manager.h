@@ -37,6 +37,7 @@ namespace panda
          /// The second argument must be the number of processors,
          /// the third argument must be the number of threads per processor.
          JobManager(const Names&, const int, const int);
+         JobManager(const Names&, const int, const int, const Vertices<Integer>& vertices, const VertexMaps&);
       private:
          Communication communication;
          mutable List<Integer, TagType> rows;
