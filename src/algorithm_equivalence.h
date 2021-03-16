@@ -7,6 +7,8 @@
 #pragma once
 
 #include "maps.h"
+#include "matrix.h"
+#include "row.h"
 #include <set>
 
 namespace panda
@@ -19,6 +21,9 @@ namespace panda
       bool equivalencePolyToPoly(std::set<int>, std::set<int>, const VertexMaps&);
       /// Function to map the indices of a polytope under a vertex map
       std::set<int> mapVerticesPolytope(std::set<int>, const VertexMap&);
+      /// check the equivalence of two faces given the vertices and the maps
+      template <typename Integer>
+      bool equivalenceFaceToFace(const Row<Integer>&, const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&);
    }
 }
 
