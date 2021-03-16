@@ -80,7 +80,11 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
       condition.notify_one();
    }
 }
-
+template <typename Integer, typename TagType>
+void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps) const
+{
+         int x = 1;
+}
 template <typename Integer, typename TagType>
 Row<Integer> panda::List<Integer, TagType>::get() const
 {

@@ -14,6 +14,7 @@
 
 #include "matrix.h"
 #include "names.h"
+#include "maps.h"
 #include "row.h"
 #include "tags.h"
 
@@ -27,6 +28,8 @@ namespace panda
          void put(const Matrix<Integer>&) const;
          /// merges a row with the list of rows held in the list.
          void put(const Row<Integer>&) const;
+         /// puts a row with equivalence check
+         void put(const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
          /// Returns a row that wasn't ever returned here before. Blocks the
          /// caller until data is available.
          Row<Integer> get() const;
