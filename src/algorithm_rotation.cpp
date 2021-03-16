@@ -34,6 +34,10 @@ namespace {
    /// Returns all vertices that lie on the facet (satisfy the inequality with equality).
    template<typename Integer>
    Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer> &, const Facet<Integer> &);
+
+   /// Returns all indices of vertices that lie on the facet (satisfy the inequality with equality).
+   template<typename Integer>
+   std::vector<int> indicesVerticesWithZeroDistance(const Vertices<Integer> &, const Facet<Integer> &);
 }
 
 template<typename Integer, typename TagType>
@@ -157,6 +161,16 @@ namespace {
                       return (algorithm::distance(facet, vertex) == 0);
                    });
       return selection;
+   }
+
+   template<typename Integer>
+   std::vector<int> indicesVerticesWithZeroDistance(const Vertices<Integer> &vertices, const Facet<Integer> &facet) {
+      std::vector<int> selection;
+      for ( int i = 0; i < vertices.size(); i++){
+         if ( algorithm::distance(facet, vertices[i]) == 0) {
+            selection.push_back(i);
+         }
+      }
    }
 }
 
