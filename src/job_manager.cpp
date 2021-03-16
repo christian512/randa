@@ -22,11 +22,13 @@ template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 {
    rows.put(matrix);
+   std::cerr << "WATCH OUT: Put new facets without equivalence check size \n";
 }
 
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Row<Integer>& row) const
 {
+   // TODO: Check if an equivalent row is already in rows
    rows.put(row);
 }
 

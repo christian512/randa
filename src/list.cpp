@@ -63,6 +63,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
    std::lock_guard<std::mutex> lock(mutex);
    Iterator it;
    bool added;
+   // TODO: Check for equivalence here. Row is only inserted if not yet in rows, but we only have to add it if it's not equivalent
    std::tie(it, added) = rows.insert(row);
    if ( added )
    {
