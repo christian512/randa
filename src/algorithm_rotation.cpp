@@ -171,6 +171,7 @@ namespace {
             selection.push_back(i);
          }
       }
+      return selection;
    }
 }
 
