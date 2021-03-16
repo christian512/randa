@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 #include "algorithm_row_operations.h"
 #include "algorithm_equivalence.h"
@@ -109,7 +110,14 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    std::lock_guard<std::mutex> lock(mutex);
    Iterator it;
    bool added;
-   // TODO: Insert equivalence check here
+   bool equiv = false;
+   // TODO: Insert equivalence check here -> for now manually
+   // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
+   // So we implement the functions here.
+   // Get indices of vertices on the face(row)
+   // Get indices of vertices on the face for each facet in rows
+   // check for equivalence by the maps
+
    std::tie(it, added) = rows.insert(row);
    if ( added )
    {
@@ -182,3 +190,10 @@ bool panda::List<Integer, TagType>::empty() const
    return workers == 0 && iterators.empty();
 }
 
+template <typename Integer, typename TagType>
+std::set<int> panda::List<Integer, TagType>::indicesVerticesOnFace(const Row<Integer>& facet, const Vertices<Integer>& vertices)
+{
+   std::set<int> result;
+   return result;
+   // TODO: Implement the calculation of vertices on facet
+}

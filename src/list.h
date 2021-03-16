@@ -53,6 +53,8 @@ namespace panda
       private:
          /// checks if all jobs are done.
          bool empty() const;
+         /// calculates indices of vertices on a face
+         std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&);
    };
 }
 
