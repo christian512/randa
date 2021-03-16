@@ -56,6 +56,7 @@ namespace panda
          /// calculates indices of vertices on a face
          std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&) const;
          bool equivalencePolyToPoly(const std::set<int>&,const std::set<int>&, const VertexMaps&) const;
+         std::set<int> mapVerticesPolytope(std::set<int>, const VertexMap&) const;
    };
 }
 

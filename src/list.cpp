@@ -113,15 +113,16 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    Iterator it;
    bool added;
    bool equiv = false;
-   // TODO: Insert equivalence check here -> for now manually
    // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
    // So we implement the functions here.
    std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
+   // TODO: Need to change this to all rows that were ever found.
    for (auto& row_stored : rows)
    {
       std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
       // check equivalence of the two polytopes
       if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)) {
+         std::cerr << "Found equivalent polytopes.\n";
          equiv = true;
          break;
       }
@@ -226,6 +227,23 @@ bool panda::List<Integer, TagType>::equivalencePolyToPoly(const std::set<int>& i
          if ( indicesVerticesPolyOne == indicesVerticesPolyTwo) {
             return true;
          }
-         // TODO: Iterate through the vertex maps
+         for ( const auto& vertex_map : vertex_maps){
+            auto newIndicesVerticesPolyTwo = mapVerticesPolytope(indicesVerticesPolyTwo, vertex_map);
+            if (indicesVerticesPolyOne == newIndicesVerticesPolyTwo) {
+               return true;
+            }
+         }
          return false;
+      }
+
+template <typename Integer, typename TagType>
+std::set<int> panda::List<Integer, TagType>::mapVerticesPolytope(std::set<int> indicesVerticesPolytope, const VertexMap& vertex_map) const {
+         for (int i = 0; i < vertex_map.size(); i++) {
+            const auto pos = indicesVerticesPolytope.find(i);
+            if (pos != indicesVerticesPolytope.end()) {
+               indicesVerticesPolytope.erase(i);
+               indicesVerticesPolytope.insert(vertex_map[i]);
+            }
+         }
+         return indicesVerticesPolytope;
       }
