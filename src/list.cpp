@@ -58,6 +58,29 @@ void panda::List<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 }
 
 template <typename Integer, typename TagType>
+void panda::List<Integer, TagType>::put(const Matrix<Integer>& matrix, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps) const
+{
+   for ( const auto& row : matrix )
+   {
+      put(row, vertices, vertex_maps);
+   }
+   std::lock_guard<std::mutex> lock(mutex);
+   --workers;
+   #ifdef PRINT_DONE_COUNTER
+   #if HAS_FEATURE_THREAD_LOCAL == 0
+   auto index = indices[std::this_thread::get_id()];
+   #endif
+   if ( index > 0 )
+   {
+      std::stringstream stream;
+      stream << "Done processing #" << index << '\n';
+      std::cerr << stream.str();
+   }
+   #endif
+}
+
+
+template <typename Integer, typename TagType>
 void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
 {
    std::lock_guard<std::mutex> lock(mutex);
@@ -82,7 +105,25 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
 template <typename Integer, typename TagType>
 void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps) const
 {
-         // TODO: Implement this put function for List.
+   std::lock_guard<std::mutex> lock(mutex);
+   Iterator it;
+   bool added;
+   // TODO: Add the equivalence check here
+   std::tie(it, added) = rows.insert(row);
+   if ( added )
+   {
+      if ( std::is_same<TagType, tag::facet>::value )
+      {
+         algorithm::prettyPrintln(std::cout, row, names, "<=");
+      }
+      else
+      {
+         std::cout << row << '\n';
+      }
+      std::cout.flush();
+      iterators.push_back(it);
+      condition.notify_one();
+   }
 }
 template <typename Integer, typename TagType>
 Row<Integer> panda::List<Integer, TagType>::get() const

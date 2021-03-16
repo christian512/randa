@@ -26,6 +26,8 @@ namespace panda
       public:
          /// merges rows with the list of rows held in the list.
          void put(const Matrix<Integer>&) const;
+         /// puts a matrix with equivalence check
+         void put(const Matrix<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
          /// merges a row with the list of rows held in the list.
          void put(const Row<Integer>&) const;
          /// puts a row with equivalence check
