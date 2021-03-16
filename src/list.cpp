@@ -117,12 +117,12 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    // So we implement the functions here.
    std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
    // TODO: Need to change this to all rows that were ever found.
-   for (auto& row_stored : rows)
+   std::cerr << "Number of all polytopes: "  << all_rows.size() << "\n";
+   for (auto& row_stored : all_rows)
    {
       std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
       // check equivalence of the two polytopes
-      if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)) {
-         std::cerr << "Found equivalent polytopes.\n";
+      if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)){
          equiv = true;
          break;
       }
@@ -135,6 +135,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
 
    if ( added && !equiv)
    {
+      all_rows.insert(row);
       if ( std::is_same<TagType, tag::facet>::value )
       {
          algorithm::prettyPrintln(std::cout, row, names, "<=");
