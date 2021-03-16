@@ -116,8 +116,6 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
    // So we implement the functions here.
    std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
-   // TODO: Need to change this to all rows that were ever found.
-   std::cerr << "Number of all polytopes: "  << all_rows.size() << "\n";
    for (auto& row_stored : all_rows)
    {
       std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
@@ -220,7 +218,9 @@ std::set<int> panda::List<Integer, TagType>::indicesVerticesOnFace(const Row<Int
 template <typename Integer, typename TagType>
 bool panda::List<Integer, TagType>::equivalencePolyToPoly(const std::set<int>& indicesVerticesPolyOne, const std::set<int>& indicesVerticesPolyTwo,
                                                           const VertexMaps& vertex_maps) const{
+         // TODO: Somewhere here must be the error
          // check for the same number of vertices
+
          if (indicesVerticesPolyOne.size() != indicesVerticesPolyTwo.size()) {
             return false;
          }
@@ -239,12 +239,12 @@ bool panda::List<Integer, TagType>::equivalencePolyToPoly(const std::set<int>& i
 
 template <typename Integer, typename TagType>
 std::set<int> panda::List<Integer, TagType>::mapVerticesPolytope(std::set<int> indicesVerticesPolytope, const VertexMap& vertex_map) const {
+         std::set<int> newIndices;
          for (int i = 0; i < vertex_map.size(); i++) {
             const auto pos = indicesVerticesPolytope.find(i);
             if (pos != indicesVerticesPolytope.end()) {
-               indicesVerticesPolytope.erase(i);
-               indicesVerticesPolytope.insert(vertex_map[i]);
+               newIndices.insert(vertex_map[i]);
             }
          }
-         return indicesVerticesPolytope;
+         return newIndices;
       }
