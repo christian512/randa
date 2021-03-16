@@ -17,7 +17,6 @@
 #include "algorithm_row_operations.h"
 
 using namespace panda;
-// TODO: Add put & put to pass vertices and vertex maps
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 {
@@ -27,8 +26,9 @@ void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix) con
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix, const Vertices<Integer>& vertices, const VertexMaps& vertex_maps) const
 {
+   // TODO: Implement the equivalence check
    rows.put(matrix);
-   std::cerr << "WATCH OUT: Put new facets without equivalence check size \n";
+   std::cerr << "TODO: Implement the Equivalence check \n";
 }
 
 template <typename Integer, typename TagType>
@@ -41,8 +41,9 @@ void panda::JobManager<Integer, TagType>::put(const Row<Integer>& row) const
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Row<Integer>& row, const Vertices<Integer>& vertices, const VertexMaps& vertexMaps) const
 {
+   // TODO: Implement the Equivalence check.
    rows.put(row);
-   std::cerr << "WATCH OUT: Put new facets without equivalence check size \n";
+   std::cerr << "TODO: Implement the Equivalence check \n";
 }
 
 template <typename Integer, typename TagType>
