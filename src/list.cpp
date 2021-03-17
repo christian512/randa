@@ -115,16 +115,20 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    bool equiv = false;
    // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
    // So we implement the functions here.
-   std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
-   for (auto& row_stored : all_rows)
+   if (vertex_maps.size() > 0)
    {
-      std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
-      // check equivalence of the two polytopes
-      if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)){
-         equiv = true;
-         break;
+      std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
+      for (auto& row_stored : all_rows)
+      {
+         std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
+         // check equivalence of the two polytopes
+         if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)){
+            equiv = true;
+            break;
+         }
       }
    }
+
    if ( !equiv ) {
       std::tie(it, added) = rows.insert(row);
    } else {
@@ -133,7 +137,10 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
 
    if ( added && !equiv)
    {
-      all_rows.insert(row);
+      if (vertex_maps.size() > 0)
+      {
+         all_rows.insert(row);
+      }
       if ( std::is_same<TagType, tag::facet>::value )
       {
          algorithm::prettyPrintln(std::cout, row, names, "<=");
