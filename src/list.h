@@ -47,7 +47,7 @@ namespace panda
          mutable std::size_t workers;
          mutable std::condition_variable condition;
          mutable std::set<Row<Integer>> rows;
-         mutable std::set<Row<Integer>> all_rows;
+         mutable std::vector<std::set<int>> all_polys;
          using Iterator = typename std::set<Row<Integer>>::iterator;
          mutable std::vector<Iterator> iterators;
          mutable std::size_t counter;

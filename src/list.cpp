@@ -113,16 +113,16 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    Iterator it;
    bool added;
    bool equiv = false;
+   std::set<int> indicesVerticesPolytopeOne;
    // It would be better to use functions from algorithm_equivalence, but I don't know how to do that.
    // So we implement the functions here.
    if (vertex_maps.size() > 0)
    {
-      std::set<int> indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
-      for (auto& row_stored : all_rows)
+      indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
+      for (const auto& poly : all_polys)
       {
-         std::set<int> indicesVerticesPolytopeTwo = indicesVerticesOnFace(row_stored, vertices);
          // check equivalence of the two polytopes
-         if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, indicesVerticesPolytopeTwo, vertex_maps)){
+         if ( equivalencePolyToPoly(indicesVerticesPolytopeOne, poly, vertex_maps)){
             equiv = true;
             break;
          }
@@ -139,7 +139,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
    {
       if (vertex_maps.size() > 0)
       {
-         all_rows.insert(row);
+         all_polys.push_back(indicesVerticesPolytopeOne);
       }
       if ( std::is_same<TagType, tag::facet>::value )
       {
@@ -225,9 +225,8 @@ std::set<int> panda::List<Integer, TagType>::indicesVerticesOnFace(const Row<Int
 template <typename Integer, typename TagType>
 bool panda::List<Integer, TagType>::equivalencePolyToPoly(const std::set<int>& indicesVerticesPolyOne, const std::set<int>& indicesVerticesPolyTwo,
                                                           const VertexMaps& vertex_maps) const{
-         // TODO: Somewhere here must be the error
-         // check for the same number of vertices
 
+         // check for the same number of vertices
          if (indicesVerticesPolyOne.size() != indicesVerticesPolyTwo.size()) {
             return false;
          }
