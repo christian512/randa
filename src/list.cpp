@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <algorithm>
 #include <numeric>
 
@@ -128,7 +129,28 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
          }
       }
    }
-
+   // Perform equivalence check with GAP server
+   std::ifstream in("/home/chris/fromgap.pipe");
+   std::ofstream out("/home/chris/togap.pipe");
+   // writing / reading
+   indicesVerticesPolytopeOne = indicesVerticesOnFace(row, vertices);
+   std::string s;
+   s += '[';
+   for (auto const& e : indicesVerticesPolytopeOne)
+   {
+       // std::cerr << e+1 << std::endl;
+       s += std::to_string(e+1);
+       s += ',';
+   }
+   s.pop_back();
+   s += ']';
+   out << s << std::endl;
+   out.flush();
+   std::string line;
+   std::getline(in, line);
+   if (line == "true"){
+       equiv = true;
+   }
    if ( !equiv ) {
       std::tie(it, added) = rows.insert(row);
    } else {
