@@ -96,8 +96,8 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    std::set<Row<Integer>> output;
    std::set<Row<Integer>> new_ridges;
    for (const auto &ridge : ridges) {
-      // TODO: equivalence check on ridges -> Does this work now?
-      if ( equivalenceGAP(ridge, vertices_on_facet)) {
+      // TODO: Pass all_vertices instead of matrix
+      if ( equivalenceGAP(ridge, vertices_on_facet, matrix)) {
           output.insert(ridge);
           new_ridges.insert(ridge);
       }

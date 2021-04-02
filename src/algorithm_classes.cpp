@@ -89,9 +89,22 @@ Matrix<Integer> panda::algorithm::classes(std::set<Row<Integer>> rows, const Map
 }
 
 template <typename Integer>
-bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices) {
+bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices, const Vertices<Integer>& all_vertices) {
     // calculate indices of vertices
-    std::set<int> indices = indicesVerticesOnFace(row, vertices);
+    std::set<int> indices;
+    for (int i = 0; i < vertices.size(); i++) {
+        Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), row.cbegin(), Integer{0});
+        if (dist == 0) {
+            auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
+            if ( it != all_vertices.end()){
+                int idx = it - all_vertices.begin();
+                indices.insert(idx);
+            }
+            else {
+                std::cerr << "This should not happen! " << std::endl;
+            }
+        }
+    }
     std::string s;
     s += "[";
     for (auto const &e: indices) {
