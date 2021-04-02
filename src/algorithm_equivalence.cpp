@@ -11,6 +11,9 @@
 #undef COMPILE_TEMPLATE_ALGORITHM_CLASSES
 
 #include <set>
+#include <numeric>
+#include <iostream>
+#include <fstream>
 
 
 using namespace panda;
@@ -49,4 +52,42 @@ template <typename Integer>
 bool panda::algorithm::equivalenceFaceToFace(const Row<Integer>& row_one, const Row<Integer>& row_two, const Vertices<Integer>& vertices,
                                              const VertexMaps& vertex_maps) {
    return true;
+}
+
+template <typename Integer>
+bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices) {
+    // calculate indices of vertices
+    std::set<int> indices = indicesVerticesOnFace(row, vertices);
+    std::string s;
+    s += "[";
+    for (auto const &e: indices) {
+        s += std::to_string(e + 1);
+        s += ',';
+    }
+    s.pop_back();
+    s += ']';
+    // Connect to GAP Server using FIFO named pipes
+    std::ifstream in("/home/chris/fromgap.pipe");
+    std::ofstream out("/home/chris/togap.pipe");
+    std::string line;
+    // write the vertices on face
+    out << s << std::endl;
+    std::getline(in, line);
+    if (line == "true") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+template <typename Integer, typename TagType>
+std::set<int> panda::algorithm::indicesVerticesOnFace(const Row<Integer>& facet, const Vertices<Integer>& vertices)  {
+    std::set<int> selection;
+    for (int i = 0; i < vertices.size(); i++) {
+        Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), facet.cbegin(), Integer{0});
+        if (dist == 0) {
+            selection.insert(i);
+        }
+    }
+    return selection;
 }
