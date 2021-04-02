@@ -69,8 +69,11 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
    std::set<Row<Integer>> output;
    for (const auto &ridge : ridges) {
       const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
-      // TODO: Do equivalence check here
-      output.insert(new_row);
+      // do equivalence check via GAP
+      if ( !equivalenceGAP(new_row, matrix, matrix, curr_recursion_level)){
+          output.insert(new_row);
+      }
+
    }
    return classes(output, maps, tag);
 }
@@ -99,7 +102,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    std::set<Row<Integer>> new_ridges;
    for (const auto &ridge : ridges) {
       // TODO: Pass all_vertices instead of matrix
-      if ( equivalenceGAP(ridge, vertices_on_facet, matrix, curr_recursion_level)) {
+      if ( !equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
           output.insert(ridge);
           new_ridges.insert(ridge);
       }

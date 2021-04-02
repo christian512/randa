@@ -149,9 +149,10 @@ namespace
          auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
          for ( auto& facet : facets )
          {
-            facet = algorithm::classRepresentative(facet, maps, TagType{});
+            if ( !algorithm::equivalenceGAP(facet, matrix, matrix, 0)){
+                manager.put(facet);
+            }
          }
-         manager.put(facets);
       }
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
