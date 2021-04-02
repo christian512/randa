@@ -65,10 +65,11 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
                                                      int curr_recursion_level,
                                                      int max_recursion_level) {
    const auto furthest_vertex = furthestVertex(matrix, input);
-   const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level, max_recursion_level);
+   const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level, max_recursion_level, matrix);
    std::set<Row<Integer>> output;
    for (const auto &ridge : ridges) {
       const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
+      // TODO: Do equivalence check here
       output.insert(new_row);
    }
    return classes(output, maps, tag);
@@ -82,8 +83,9 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      const Maps &maps,
                                                      TagType tag,
                                                      int curr_recursion_level,
-                                                     int max_recursion_level) {
-
+                                                     int max_recursion_level,
+                                                     const Matrix<Integer> &all_vertices) {
+   std::cerr << "Current recursion level: "  << curr_recursion_level << std::endl;
    // if no recursion just give the ridges by FME
    if (curr_recursion_level == max_recursion_level) {
       return getRidges(matrix, input);
@@ -97,7 +99,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    std::set<Row<Integer>> new_ridges;
    for (const auto &ridge : ridges) {
       // TODO: Pass all_vertices instead of matrix
-      if ( equivalenceGAP(ridge, vertices_on_facet, matrix)) {
+      if ( equivalenceGAP(ridge, vertices_on_facet, matrix, curr_recursion_level)) {
           output.insert(ridge);
           new_ridges.insert(ridge);
       }
@@ -108,7 +110,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
       new_ridges.erase(new_ridges.begin());
       // get the ridges
       const auto sub_ridges = algorithm::getRidgesRecursive(vertices_on_facet, ridge, maps, tag,
-                                                            curr_recursion_level + 1, max_recursion_level);
+                                                            curr_recursion_level + 1, max_recursion_level, all_vertices);
       // rotate ridge around each sub ridge
       const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
       for (const auto &sub_ridge : sub_ridges) {

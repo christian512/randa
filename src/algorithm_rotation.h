@@ -23,7 +23,7 @@ namespace panda
       Facets<Integer> rotation_recursive(const Vertices<Integer>&, const Facet<Integer>&, const Maps&, TagType, int, int);
       /// Returns all faces for a given set of vertices and some faces (or class representatives) of a row using a recursive rotation algorithm
       template <typename Integer, typename TagType>
-      Facets<Integer> getRidgesRecursive(const Vertices<Integer>&, const Facet<Integer>&, const Maps&, TagType, int, int);
+      Facets<Integer> getRidgesRecursive(const Vertices<Integer>&, const Facet<Integer>&, const Maps&, TagType, int, int, const Vertices<Integer>&);
    }
 }
 

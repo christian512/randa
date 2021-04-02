@@ -19,9 +19,9 @@ namespace panda
       EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet);
       EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex);
       EXTERN template Matrix<Integer> rotation_recursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int);
-      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int);
+      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, const Matrix<Integer>&);
       EXTERN template Matrix<Integer> rotation_recursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int);
-      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int);
+      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, const Matrix<Integer>&);
    }
 }
 

@@ -89,7 +89,7 @@ Matrix<Integer> panda::algorithm::classes(std::set<Row<Integer>> rows, const Map
 }
 
 template <typename Integer>
-bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices, const Vertices<Integer>& all_vertices) {
+bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices, const Vertices<Integer>& all_vertices, int recursion_level) {
     // calculate indices of vertices
     std::set<int> indices;
     for (int i = 0; i < vertices.size(); i++) {
@@ -106,13 +106,15 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
         }
     }
     std::string s;
-    s += "[";
+    s += "[[";
+    s += std::to_string(recursion_level);
+    s += "],[";
     for (auto const &e: indices) {
         s += std::to_string(e + 1);
         s += ',';
     }
     s.pop_back();
-    s += ']';
+    s += ']]';
     // Connect to GAP Server using FIFO named pipes
     std::ifstream in("/home/chris/fromgap.pipe");
     std::ofstream out("/home/chris/togap.pipe");
