@@ -106,15 +106,15 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
         }
     }
     std::string s;
-    s += "[[";
+    s += "[";
     s += std::to_string(recursion_level);
-    s += "],[";
+    s += ",";
     for (auto const &e: indices) {
         s += std::to_string(e + 1);
         s += ',';
     }
     s.pop_back();
-    s += ']]';
+    s += ']';
     // Connect to GAP Server using FIFO named pipes
     std::ifstream in("/home/chris/fromgap.pipe");
     std::ofstream out("/home/chris/togap.pipe");
