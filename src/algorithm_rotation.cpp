@@ -87,6 +87,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    // if no recursion just give the ridges by FME
    if (curr_recursion_level == max_recursion_level) {
       return getRidges(matrix, input);
+      // TODO: Equivalence check on ridges
    }
    // get the vertices on the face and a single ridge
    const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
@@ -95,6 +96,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
    std::set<Row<Integer>> output;
    std::set<Row<Integer>> new_ridges;
    for (const auto &ridge : ridges) {
+      // TODO: equivalence check on ridges
       output.insert(ridge);
       new_ridges.insert(ridge);
    }
@@ -109,6 +111,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
       const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
       for (const auto &sub_ridge : sub_ridges) {
          const auto new_row = rotate(vertices_on_facet, furthest_vertex, ridge, sub_ridge);
+         // TODO: Change to GAP equivalence check
          const bool is_in = output.find(new_row) != output.end();
          // if this ridge was not found, add it to the output.
          if (!is_in) {
