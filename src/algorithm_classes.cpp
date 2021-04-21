@@ -116,8 +116,8 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
     s.pop_back();
     s += ']';
     // Connect to GAP Server using FIFO named pipes
-    std::ifstream in("~/fromgap.pipe");
-    std::ofstream out("~/togap.pipe");
+    std::ifstream in("/home/chris/fromgap.pipe");
+    std::ofstream out("/home/chris/togap.pipe");
     std::string line;
     // write the vertices on face
     out << s << std::endl;
