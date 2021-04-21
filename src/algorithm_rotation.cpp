@@ -89,9 +89,11 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
     // if no recursion just give the ridges by FME
     if (curr_recursion_level == max_recursion_level) {
         const auto ridges = getRidges(matrix, input);
+        // get the vertices on the face and a single ridge
+        const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
         Inequalities<Integer> inequiv_ridges;
         for (const auto ridge : ridges) {
-            if (!equivalenceGAP(ridge, matrix, all_vertices, curr_recursion_level)) {
+            if (!equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
                 inequiv_ridges.push_back(ridge);
             }
         }
