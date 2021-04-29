@@ -154,7 +154,7 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
                 auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
                 if ( it != all_vertices.end()){
                     int idx = it - all_vertices.begin();
-                    s += std::to_string(idx);
+                    s += std::to_string(idx+1);
                 }
                 else {
                     std::cerr << "This should not happen! " << std::endl;
