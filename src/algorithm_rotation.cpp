@@ -49,7 +49,7 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer> &matrix,
     // this will be the same vertex for all neighbouring ridges, hence, only needs to be computed once.
     const auto furthest_vertex = furthestVertex(matrix, input);
     const auto ridges = getRidges(matrix, input);
-    std::set<Row<Integer>> output;
+    std::set <Row<Integer>> output;
     for (const auto &ridge : ridges) {
         const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
         output.insert(new_row);
@@ -66,7 +66,7 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
                                                      int max_recursion_level) {
     const auto furthest_vertex = furthestVertex(matrix, input);
     const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level, max_recursion_level, matrix);
-    std::set<Row<Integer>> output;
+    std::set <Row<Integer>> output;
     for (const auto &ridge : ridges) {
         const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
         // do equivalence check via GAP
@@ -88,50 +88,23 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      const Matrix<Integer> &all_vertices) {
     // if no recursion just give the ridges by FME
     if (curr_recursion_level == max_recursion_level) {
-        const auto ridges = getRidges(matrix, input);
-        // get the vertices on the face and a single ridge
-        const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
-        Inequalities<Integer> inequiv_ridges;
-        for (const auto ridge : ridges) {
-            if (!equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
-                inequiv_ridges.push_back(ridge);
-            }
-        }
-        return inequiv_ridges;
+        return getRidges(matrix, input);
     }
     // get the vertices on the face and a single ridge
     const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
-    // add ridge to output and to newly found ridges
-    std::set<Row<Integer>> output;
-    std::set<Row<Integer>> new_ridges;
-    for (const auto &ridge : ridges) {
-        // equivalence check, only consider vertices_on_facet
-        if (!equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
-            output.insert(ridge);
-            new_ridges.insert(ridge);
-        }
-    }
-    while (!new_ridges.empty()) {
-        // take one new face
-        auto ridge = *new_ridges.begin();
-        new_ridges.erase(new_ridges.begin());
-        // get the ridges
-        const auto sub_ridges = algorithm::getRidgesRecursive(vertices_on_facet, ridge, maps, tag,
-                                                              curr_recursion_level + 1, max_recursion_level,
-                                                              all_vertices);
-        // rotate ridge around each sub ridge
-        const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
-        for (const auto &sub_ridge : sub_ridges) {
-            const auto new_row = rotate(vertices_on_facet, furthest_vertex, ridge, sub_ridge);
-            // check if equivalent to new row was already found
-            const bool is_in = equivalenceGAP(new_row, vertices_on_facet, all_vertices, curr_recursion_level);
-            // if this ridge was not found, add it to the output.
-            if (!is_in) {
-                output.insert(new_row);
-                new_ridges.insert(new_row);
-            }
-        }
+    // only consider a single ridge
+    auto ridge = *ridges.begin();
+    // get the subridges of this ridge
+    const auto vertices_on_ridge = verticesWithZeroDistance(vertices_on_facet, ridge);
+    auto subridges = algorithm::getRidgesRecursive(vertices_on_ridge, ridge, maps, tag, curr_recursion_level + 1,
+                                                   max_recursion_level, all_vertices);
+    // rotate the ridge around the subridges
+    std::set <Row<Integer>> output;
+    const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
+    for (const auto &subridge: subridges) {
+        const auto new_ridge = rotate(vertices_on_facet, furthest_vertex, ridge, subridge);
+        output.insert(new_ridge);
     }
     return classes(output, maps, tag);
 }
