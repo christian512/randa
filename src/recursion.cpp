@@ -48,7 +48,7 @@ int panda::recursion::recursionDepth(int argc, char** argv)
          throw std::invalid_argument("Illegal parameter. Did you mean \"-r <n>\" or \"--recursion=<n>\"?");
       }
    }
-   const auto default_value = 0;
+   const auto default_value = 1;
    return default_value;
 }
 

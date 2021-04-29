@@ -65,7 +65,7 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
                                                      int curr_recursion_level,
                                                      int max_recursion_level) {
     const auto furthest_vertex = furthestVertex(matrix, input);
-    const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level, max_recursion_level, matrix);
+    const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level+1, max_recursion_level, matrix);
     std::set<Row<Integer>> output;
     for (const auto &ridge : ridges) {
         const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
@@ -87,7 +87,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      int max_recursion_level,
                                                      const Matrix<Integer> &all_vertices) {
     // if no recursion just give the ridges by FME
-    if (curr_recursion_level == max_recursion_level) {
+    if (curr_recursion_level >= max_recursion_level) {
         const auto ridges = getRidges(matrix, input);
         // get the vertices on the face and a single ridge
         const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
