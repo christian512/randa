@@ -25,8 +25,8 @@ namespace panda
       EXTERN template Matrix<Integer> classes(std::set<Row<Integer>>, const Maps&, tag::facet);
       EXTERN template Matrix<Integer> classes(std::set<Row<Integer>>, const Maps&, tag::vertex);
       EXTERN template bool equivalenceGAP(const Row<Integer>&, const Vertices<Integer>&, const Vertices<Integer>&, int);
+      EXTERN template Matrix<Integer> equivalenceGAPList(const Matrix<Integer>&, const Vertices<Integer>&, const Vertices<Integer>&, int);
       EXTERN template std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&);
-
    }
 }
 

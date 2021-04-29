@@ -130,6 +130,59 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
 }
 
 template <typename Integer>
+Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matrix, const Vertices<Integer>& vertices,
+                                                   const Vertices<Integer>& all_vertices, int recursion_level) {
+    /*
+     * This function returns the faces that are inequivalent within the matrix given. So it gives the GAP server the full list of FACES and GAP checks which are actually new.
+     * GAP also compares to already stored faces within the server.
+     */
+    // For returning the inequivalent rows
+    Matrix<Integer> inequivalent_rows;
+    // string to send to gap
+    std::string s;
+    // add recursion level to string
+    s = "[[" + std::to_string(recursion_level) + "]";
+    // Iterate over the faces in the matrix and get the vertices on the face
+    for( auto &row: matrix) {
+        s += ",[";
+        for (int i = 0; i < vertices.size(); i++) {
+            if( i > 0){
+                s += ",";
+            }
+            Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), row.cbegin(), Integer{0});
+            if (dist == 0) {
+                auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
+                if ( it != all_vertices.end()){
+                    int idx = it - all_vertices.begin();
+                    s += std::to_string(idx);
+                }
+                else {
+                    std::cerr << "This should not happen! " << std::endl;
+                }
+            }
+        }
+        s += "]";
+    }
+    s += "]";
+    // COMMUNICATE WITH GAP
+    std::ifstream in("/home/chris/fromgap.pipe");
+    std::ofstream out("/home/chris/togap.pipe");
+    std::string line;
+    out << s << std::endl;
+    std::getline(in, line);
+    // PROCESS THE RESPONSE
+    int pos = 0;
+    std::string token;
+    while ((pos = line.find(",")) != std::string::npos) {
+        token = line.substr(0, pos);
+        int idx = std::stoi(token);
+        inequivalent_rows.insert(inequivalent_rows.end(),matrix[idx]);
+        line.erase(0, pos + 1);
+    }
+    return inequivalent_rows;
+}
+
+template <typename Integer>
 std::set<int> panda::algorithm::indicesVerticesOnFace(const Row<Integer>& facet, const Vertices<Integer>& vertices)  {
     std::set<int> selection;
     for (int i = 0; i < vertices.size(); i++) {
