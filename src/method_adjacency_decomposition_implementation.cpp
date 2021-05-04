@@ -147,11 +147,10 @@ namespace
       else
       {
          auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
-         for ( auto& facet : facets )
-         {
-            if ( !algorithm::equivalenceGAP(facet, matrix, matrix, 0)){
-                manager.put(facet);
-            }
+         Matrix<Integer> inequiv_facets;
+         inequiv_facets = algorithm::equivalenceGAPList(facets, matrix, matrix,0);
+         for ( auto& facet : inequiv_facets ) {
+             manager.put(facet);
          }
       }
       // Add the remaining known facets from file asynchronously.

@@ -66,14 +66,12 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
                                                      int max_recursion_level) {
     const auto furthest_vertex = furthestVertex(matrix, input);
     const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level+1, max_recursion_level, matrix);
+    Matrix<Integer> inequiv_rows;
+    inequiv_rows = equivalenceGAPList(ridges, matrix, matrix, curr_recursion_level);
+    // Convert inequiv_rows to set
     std::set<Row<Integer>> output;
-    for (const auto &ridge : ridges) {
-        const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
-        // do equivalence check via GAP
-        if (!equivalenceGAP(new_row, matrix, matrix, curr_recursion_level)) {
-            output.insert(new_row);
-        }
-
+    for( const auto o: inequiv_rows){
+        output.insert(o);
     }
     return classes(output, maps, tag);
 }
@@ -92,25 +90,22 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
         // get the vertices on the face and a single ridge
         const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
         Inequalities<Integer> inequiv_ridges;
-        for (const auto ridge : ridges) {
-            if (!equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
-                inequiv_ridges.push_back(ridge);
-            }
-        }
+        inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
         return inequiv_ridges;
     }
     // get the vertices on the face and a single ridge
     const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+    Matrix<Integer> inequiv_ridges;
+    inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
+
     // add ridge to output and to newly found ridges
     std::set<Row<Integer>> output;
     std::set<Row<Integer>> new_ridges;
-    for (const auto &ridge : ridges) {
+    for (const auto &ridge : inequiv_ridges) {
         // equivalence check, only consider vertices_on_facet
-        if (!equivalenceGAP(ridge, vertices_on_facet, all_vertices, curr_recursion_level)) {
-            output.insert(ridge);
-            new_ridges.insert(ridge);
-        }
+        output.insert(ridge);
+        new_ridges.insert(ridge);
     }
     while (!new_ridges.empty()) {
         // take one new face
@@ -122,15 +117,17 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                               all_vertices);
         // rotate ridge around each sub ridge
         const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
+        Matrix<Integer> new_rows;
         for (const auto &sub_ridge : sub_ridges) {
             const auto new_row = rotate(vertices_on_facet, furthest_vertex, ridge, sub_ridge);
-            // check if equivalent to new row was already found
-            const bool is_in = equivalenceGAP(new_row, vertices_on_facet, all_vertices, curr_recursion_level);
-            // if this ridge was not found, add it to the output.
-            if (!is_in) {
-                output.insert(new_row);
-                new_ridges.insert(new_row);
-            }
+            new_rows.push_back(new_row);
+        }
+        // perform equivalence check
+        Matrix<Integer> inequiv_rows;
+        inequiv_rows = equivalenceGAPList(new_rows, vertices_on_facet, all_vertices, curr_recursion_level);
+        for( const auto &row : inequiv_rows){
+            output.insert(row);
+            output.insert(row);
         }
     }
     return classes(output, maps, tag);
