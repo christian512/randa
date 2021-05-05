@@ -168,6 +168,7 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     std::string line;
     out << s << std::endl;
     std::getline(in, line);
+    line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
     // PROCESS THE RESPONSE
     int pos = 0;
     std::string token;
@@ -176,12 +177,19 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     if( line == "false"){
         return inequivalent_rows;
     }
+    // remove leading "[" and ending "]"
+    line.erase(0, 1);
+    line.erase(line.end()-1);
     while ((pos = line.find(",")) != std::string::npos) {
         token = line.substr(0, pos);
         int idx = std::stoi(token);
         inequivalent_rows.insert(inequivalent_rows.end(),matrix[idx]);
         line.erase(0, pos + 1);
     }
+    // Take the last entry in the line
+    int idx = std::stoi(line);
+    inequivalent_rows.insert(inequivalent_rows.end(), matrix[idx]);
+    std::cerr << "#InequivRows: " << inequivalent_rows.size() << std::endl;
     return inequivalent_rows;
 }
 
