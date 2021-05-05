@@ -189,7 +189,6 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     // Take the last entry in the line
     int idx = std::stoi(line);
     inequivalent_rows.insert(inequivalent_rows.end(), matrix[idx]);
-    std::cerr << "#InequivRows: " << inequivalent_rows.size() << std::endl;
     return inequivalent_rows;
 }
 

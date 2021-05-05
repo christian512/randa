@@ -101,7 +101,6 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
     Matrix<Integer> inequiv_ridges;
     inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
-
     // add ridge to output and to newly found ridges
     std::set<Row<Integer>> output;
     std::set<Row<Integer>> new_ridges;
