@@ -136,8 +136,6 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
      * This function returns the faces that are inequivalent within the matrix given. So it gives the GAP server the full list of FACES and GAP checks which are actually new.
      * GAP also compares to already stored faces within the server.
      */
-    // For returning the inequivalent rows
-    Matrix<Integer> inequivalent_rows;
     // string to send to gap
     std::string s;
     // add recursion level to string
@@ -146,21 +144,21 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     for( auto &row: matrix) {
         s += ",[";
         for (int i = 0; i < vertices.size(); i++) {
-            if( i > 0){
-                s += ",";
-            }
             Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), row.cbegin(), Integer{0});
             if (dist == 0) {
                 auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
                 if ( it != all_vertices.end()){
                     int idx = it - all_vertices.begin();
                     s += std::to_string(idx+1);
+                    s += ",";
                 }
                 else {
                     std::cerr << "This should not happen! " << std::endl;
                 }
             }
         }
+        // remove last ","
+        s.erase(s.end()-1);
         s += "]";
     }
     s += "]";
@@ -173,6 +171,11 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     // PROCESS THE RESPONSE
     int pos = 0;
     std::string token;
+    // For returning the inequivalent rows
+    Matrix<Integer> inequivalent_rows;
+    if( line == "false"){
+        return inequivalent_rows;
+    }
     while ((pos = line.find(",")) != std::string::npos) {
         token = line.substr(0, pos);
         int idx = std::stoi(token);
