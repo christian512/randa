@@ -92,7 +92,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      int max_recursion_level,
                                                      const Matrix<Integer> &all_vertices) {
     // if no recursion just give the ridges by FME
-    if (curr_recursion_level >= max_recursion_level) {
+    if (curr_recursion_level >= max_recursion_level || matrix.size() <= 4) {
         const auto ridges = getRidges(matrix, input);
         return ridges;
     }
@@ -101,6 +101,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
     Matrix<Integer> inequiv_ridges;
     inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
+    // TODO: Here you can simply insert the probabilistic version, if you have a flag
     // add ridge to output and to newly found ridges
     std::set<Row<Integer>> output;
     std::set<Row<Integer>> new_ridges;
