@@ -153,10 +153,12 @@ namespace
              manager.put(facet);
          }
       }
+      // TODO: Equivalence Check in Known Input
+      Matrix<Integer> known_output_inequiv = algorithm::equivalenceGAPList(known_output, matrix, matrix, 0);
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
       {
-         for ( const auto& facet : known_output )
+         for ( const auto& facet : known_output_inequiv )
          {
             auto tmp = algorithm::normalize(facet, equations);
             tmp = algorithm::classRepresentative(tmp, maps, TagType{});
