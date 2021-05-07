@@ -58,7 +58,6 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto max_recursion_depth = recursion::recursionDepth(argc, argv);
    int curr_recursion_depth = 0;
    const auto probFlag = probabilistic::probabilisticFlag(argc, argv);
-   std::cerr << "ProbFlag: " << probFlag << std::endl;
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
@@ -81,7 +80,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             {
                break;
             }
-            const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth);
+            const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
             job_manager.put(jobs);
          }
       });

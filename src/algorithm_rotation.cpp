@@ -49,7 +49,7 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer> &matrix,
     // this will be the same vertex for all neighbouring ridges, hence, only needs to be computed once.
     const auto furthest_vertex = furthestVertex(matrix, input);
     const auto ridges = getRidges(matrix, input);
-    std::set<Row<Integer>> output;
+    std::set <Row<Integer>> output;
     for (const auto &ridge : ridges) {
         const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
         output.insert(new_row);
@@ -63,9 +63,19 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
                                                      const Maps &maps,
                                                      TagType tag,
                                                      int curr_recursion_level,
-                                                     int max_recursion_level) {
+                                                     int max_recursion_level,
+                                                     int probFlag) {
     const auto furthest_vertex = furthestVertex(matrix, input);
-    const auto ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level+1, max_recursion_level, matrix);
+    Matrix<Integer> ridges;
+    if (probFlag == 0) {
+        ridges = getRidgesRecursive(matrix, input, maps, tag, curr_recursion_level + 1, max_recursion_level, matrix,
+                                    probFlag);
+    }
+    if (probFlag == 1) {
+        ridges = getRidgesRecursiveProbabilistic(matrix, input, maps, tag, curr_recursion_level + 1,
+                                                 max_recursion_level, matrix,
+                                                 probFlag);
+    }
     // Rotate the input
     Matrix<Integer> new_rows;
     for (const auto &ridge : ridges) {
@@ -76,8 +86,8 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
     Matrix<Integer> inequiv_rows;
     inequiv_rows = equivalenceGAPList(new_rows, matrix, matrix, curr_recursion_level);
     // Convert inequiv_rows vector to set
-    std::set<Row<Integer>> output;
-    for( const auto o: inequiv_rows){
+    std::set <Row<Integer>> output;
+    for (const auto o: inequiv_rows) {
         output.insert(o);
     }
     return classes(output, maps, tag);
@@ -90,7 +100,8 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      TagType tag,
                                                      int curr_recursion_level,
                                                      int max_recursion_level,
-                                                     const Matrix<Integer> &all_vertices) {
+                                                     const Matrix<Integer> &all_vertices,
+                                                     int probFlag) {
     // if no recursion just give the ridges by FME
     if (curr_recursion_level >= max_recursion_level || matrix.size() <= 4) {
         const auto ridges = getRidges(matrix, input);
@@ -101,10 +112,9 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
     Matrix<Integer> inequiv_ridges;
     inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
-    // TODO: Here you can simply insert the probabilistic version, if you have a flag
     // add ridge to output and to newly found ridges
-    std::set<Row<Integer>> output;
-    std::set<Row<Integer>> new_ridges;
+    std::set <Row<Integer>> output;
+    std::set <Row<Integer>> new_ridges;
     for (const auto &ridge : inequiv_ridges) {
         // equivalence check, only consider vertices_on_facet
         output.insert(ridge);
@@ -117,7 +127,7 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
         // get the ridges
         const auto sub_ridges = algorithm::getRidgesRecursive(vertices_on_facet, ridge, maps, tag,
                                                               curr_recursion_level + 1, max_recursion_level,
-                                                              all_vertices);
+                                                              all_vertices, probFlag);
         // rotate ridge around each sub ridge
         const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
         Matrix<Integer> new_rows;
@@ -128,10 +138,51 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
         // perform equivalence check
         Matrix<Integer> inequiv_rows;
         inequiv_rows = equivalenceGAPList(new_rows, vertices_on_facet, all_vertices, curr_recursion_level);
-        for( const auto &row : inequiv_rows){
+        for (const auto &row : inequiv_rows) {
             output.insert(row);
+            // TODO: WHy is this here 2 times?
             output.insert(row);
         }
+    }
+    return classes(output, maps, tag);
+}
+
+template<typename Integer, typename TagType>
+Matrix<Integer> panda::algorithm::getRidgesRecursiveProbabilistic(const Matrix<Integer> &matrix,
+                                                                  const Row<Integer> &input,
+                                                                  const Maps &maps,
+                                                                  TagType tag,
+                                                                  int curr_recursion_level,
+                                                                  int max_recursion_level,
+                                                                  const Matrix<Integer> &all_vertices,
+                                                                  int probFlag) {
+    // if no recursion just give the ridges by FME
+    if (curr_recursion_level >= max_recursion_level || matrix.size() <= 4) {
+        const auto ridges = getRidges(matrix, input);
+        return ridges;
+    }
+    // get the vertices on the face and a single ridge
+    const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
+    auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+    // add ridge to output and to newly found ridges
+    std::set <Row<Integer>> output;
+    std::set <Row<Integer>> new_ridges;
+    for (const auto &ridge : ridges) {
+        // equivalence check, only consider vertices_on_facet
+        output.insert(ridge);
+        new_ridges.insert(ridge);
+    }
+    // take one ridge
+    auto ridge = *new_ridges.begin();
+    // get the subridges of this ridge
+    const auto sub_ridges = algorithm::getRidgesRecursiveProbabilistic(vertices_on_facet, ridge, maps, tag,
+                                                                       curr_recursion_level + 1, max_recursion_level,
+                                                                       all_vertices, probFlag);
+    // rotate ridge around each sub ridge
+    const auto furthest_vertex = furthestVertex(vertices_on_facet, ridge);
+    for (const auto &sub_ridge : sub_ridges) {
+        const auto new_ridge = rotate(vertices_on_facet, furthest_vertex, ridge, sub_ridge);
+        output.insert(new_ridge);
     }
     return classes(output, maps, tag);
 }
