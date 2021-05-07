@@ -22,6 +22,7 @@
 #include "algorithm_row_operations.h"
 #include "concurrency.h"
 #include "recursion.h"
+#include "probabilistic.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
 
@@ -56,6 +57,8 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    // Get the maximum recursion level from the function call
    const auto max_recursion_depth = recursion::recursionDepth(argc, argv);
    int curr_recursion_depth = 0;
+   const auto probFlag = probabilistic::probabilisticFlag(argc, argv);
+   std::cerr << "ProbFlag: " << probFlag << std::endl;
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
@@ -153,7 +156,7 @@ namespace
              manager.put(facet);
          }
       }
-      // TODO: Equivalence Check in Known Input
+      // Equivalence Check in Known Input
       Matrix<Integer> known_output_inequiv = algorithm::equivalenceGAPList(known_output, matrix, matrix, 0);
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
