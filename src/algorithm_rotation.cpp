@@ -140,8 +140,8 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
         inequiv_rows = equivalenceGAPList(new_rows, vertices_on_facet, all_vertices, curr_recursion_level);
         for (const auto &row : inequiv_rows) {
             output.insert(row);
-            // TODO: WHy is this here 2 times?
-            output.insert(row);
+            // Add new ridge to the new ridges
+            new_ridges.insert(row);
         }
     }
     return classes(output, maps, tag);
