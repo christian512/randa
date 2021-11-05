@@ -14,6 +14,8 @@
 #include <numeric>
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
+#include <stdio.h>
 
 
 using namespace panda;
@@ -67,8 +69,9 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
     s.pop_back();
     s += ']';
     // Connect to GAP Server using FIFO named pipes
-    std::ifstream in("/home/chris/fromgap.pipe");
-    std::ofstream out("/home/chris/togap.pipe");
+    std::string cwd = get_current_dir_name();
+    std::ifstream in(cwd + "/fromgap.pipe");
+    std::ofstream out(cwd + "/togap.pipe");
     std::string line;
     // write the vertices on face
     out << s << std::endl;

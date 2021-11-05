@@ -16,6 +16,8 @@
 #include <vector>
 #include <numeric>
 #include <iostream>
+#include <unistd.h>
+#include <stdio.h>
 #include <fstream>
 
 #include "algorithm_map_operations.h"
@@ -116,8 +118,9 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
     s.pop_back();
     s += ']';
     // Connect to GAP Server using FIFO named pipes
-    std::ifstream in("/home/chris/fromgap.pipe");
-    std::ofstream out("/home/chris/togap.pipe");
+    std::string cwd = get_current_dir_name();
+    std::ifstream in(cwd + "/fromgap.pipe");
+    std::ofstream out(cwd + "/togap.pipe");
     std::string line;
     // write the vertices on face
     out << s << std::endl;
@@ -163,8 +166,9 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     }
     s += "]";
     // COMMUNICATE WITH GAP
-    std::ifstream in("/home/chris/fromgap.pipe");
-    std::ofstream out("/home/chris/togap.pipe");
+    std::string cwd = get_current_dir_name();
+    std::ifstream in(cwd + "/fromgap.pipe");
+    std::ofstream out(cwd + "/togap.pipe");
     std::string line;
     out << s << std::endl;
     std::getline(in, line);
