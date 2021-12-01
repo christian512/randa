@@ -1,31 +1,3 @@
-This is a modified version of the PANDA code described below.
-It includes the possibility to run the Adjacency Decomposition Method in Parallel.
-Additionally this version communicates with GAP to perform fast equivalence checks.
-Thus this modified version enumerates faces of a Polytope up to some symmetry.
-
-SETUP for COMMUNICATION with GAP:
-This program communicates with GAP via named pipes. These pipes are essentially files, which can be created using
-"mkpipe"- command. For this program we need to communication pipes, which are:
-a) mkpipe fromgap.pipe
-b) mkpipe togap.pipe
-
-In the source code in this repository, the paths to these pipes have to be modified to run it on your computer.
-There is just one place, where this path has to be edited. After you changed these paths to your pipes, you can install
-RANDA.
-
-
-INSTALLATION:
-a) mkdir build && cd build
-b) cmake .. && make && make install
-
-USAGE:
-Before you  run RANDA, make sure you have started the GAP program for equivalence tests.
-You can execute RANDA by simply calling "randa testfile.ext" from the Terminal.
-
-The following flags are available:
--r : Recursion Depth (standard 0)
--t : Number of threads (standard given by system)
-
 ###################################################################################
 ## Author: Stefan Lörwald, Universität Heidelberg                                ##
 ## License: CC BY-NC 4.0 http://creativecommons.org/licenses/by-nc/4.0/legalcode ##
