@@ -9,6 +9,8 @@ The extension adds the following features to the original functionality:
 * Recursive calls of the Adjacency Decomposition Method (optional)
 * A heuristic version of the Adjacency Decomposition Method (optional)
 
+PANDA was written by Stefan Lörwald, Universität Heidelberg, and released under the CC BY-NC 4.0 license.
+Accordingly, RANDA is released under CC BY-NC 4.0: http://creativecommons.org/licenses/by-nc/4.0/legalcode
 
 ## Important Note
 RANDA makes use of the computer algebra system GAP, which is used for computational group theory operations. 
