@@ -1,7 +1,9 @@
 # RANDA
 
 RANDA is an extension of [PANDA](http://comopt.ifi.uni-heidelberg.de/software/PANDA), which implements AdjaceNcy Decomposition Algorithm
-for enumerating facets of convex polyhedra using parallel computing.
+for enumerating facets of convex polyhedra using parallel computing. This README describes the installation process of RANDA
+and all tools needed to execute it. The instructions will be focussed on Ubuntu as operating system, but it is also possible
+to set things up on other systems.
 
 The extension adds the following features to the original functionality: 
 * Enumeration of faces up to automorphism symmetries
@@ -32,7 +34,7 @@ After the CMake installation proceed with the following steps:
 4. optionally run tests that the installation was successful using *ctest*
 5. *make install* to make randa accessible from any directory
 
-This is the complete list of commands for the above actions:
+This is the complete list of commands to run in Ubuntu for the above actions:
 
 ```shell
 mkdir build
@@ -44,9 +46,9 @@ sudo make install
 ```
 
 ## Install GAP
+A detailed instruction on installing GAP can be found [here](https://github.com/gap-system/gap/blob/v4.11.1/INSTALL.md).
 
-
-GAP requires external library [GMP](www.libgmp.org), which needs to be installed beforehand. 
+GAP requires external library [GMP](www.libgmp.org), which needs to be installed beforehand.
 On Ubuntu you can install it using the following command. 
 ```shell
 sudo apt-get install libgmp-dev
@@ -66,22 +68,28 @@ make
 ```
 GAP can now be executed by running *./bin/gap.sh*.
 
-In order to call GAP from any location, you have to add an *Alias* to your *.bashrc* file. 
-Edit the file using *nano*: 
+For executing the scripts to communicate with RANDA, you have to install the packages for GAP.
+```shell
+cd gap-4.11.1/pkg
+../bin/BuildPackages.sh
+```
+
+In order to call GAP from any location, you have to add it to the *PATH* variable. 
+Edit your *bashrc*-file using *nano*: 
 ```shell
 nano ~/.bashrc
 ```
-Add the Alias to the end of the file.
+Add the following lines to the end of the file.
 ```shell
-alias gap="cd ~/gap-4.11.1/bin && ./gap.sh"
+PATH=~/gap-4.11.1/bin:$PATH
+alias gap="gap.sh"
 ```
-To finish setting up the Alias, source the *.bashrc* file.
+To finish the setup, source the *.bashrc* file.
 
 ```shell
 source ~/.bashrc
 ```
 Now you should be able to call *gap* from any directory.
-
 
 ## Setup Communication Files
 
