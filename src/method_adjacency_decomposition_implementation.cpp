@@ -90,10 +90,9 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                  std::cout << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
                  break;
              }
-            // on start up we can not add the jobs to all_facets so we need to do here, which is a bit inefficient
+            // Check if the JOB was already considered
             Matrix<Integer> new_facets;
             new_facets.push_back(job);
-            std::cout << "#classes = "<< all_facets.size() << " \n";
             auto ineq_facets = algorithm::equivalenceGAPList(new_facets, all_facets, input, input, 0);
             if( ineq_facets.size() > 0){
                 for( auto& facet : ineq_facets) {
@@ -171,10 +170,10 @@ namespace
       else
       {
          auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
-         Matrix<Integer> inequiv_facets;
-         Matrix<Integer> known_facets;
-         inequiv_facets = algorithm::equivalenceGAPList(facets, known_facets,matrix, matrix,0);
-         for ( auto& facet : inequiv_facets ) {
+         // Matrix<Integer> inequiv_facets;
+         // Matrix<Integer> known_facets;
+         // inequiv_facets = algorithm::equivalenceGAPList(facets, known_facets,matrix, matrix,0);
+         for ( auto& facet : facets ) {
              manager.put(facet);
          }
       }

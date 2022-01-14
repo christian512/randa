@@ -142,9 +142,9 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     // string to send to gap
     std::string s;
     // add recursion level to string
-    s = "[[" ;
+    s = "[[" + std::to_string(recursion_level) + "],[" ;
     // Iterate over the faces in the matrix and get the vertices on the face
-    // TODO: We should never call this function with empty matrix
+    // TODO: We should never call this function with empty matrix, but it occurs somwhere
     if( matrix.size() == 0){
         return matrix;
     }
