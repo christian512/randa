@@ -69,6 +69,8 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto& maps = std::get<1>(reduced_data);
    // list of all facets
    Matrix<Integer> all_facets;
+   // start timer
+   auto start_time = std::chrono::system_clock::now();
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
    for ( int i = 0; i < thread_count; ++i )
@@ -81,6 +83,11 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             // Check if empty
              if ( job.empty() )
              {
+                 // calculate execution time
+                 auto end_time = std::chrono::system_clock::now();
+                 auto elapsed =
+                         std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+                 std::cout << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
                  break;
              }
             // on start up we can not add the jobs to all_facets so we need to do here, which is a bit inefficient
@@ -92,6 +99,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                 for( auto& facet : ineq_facets) {
                     all_facets.push_back(facet);
                 }
+                std::cout << "#classes = "<< all_facets.size() << " \n";
                 const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
                 job_manager.put(jobs);
             }
