@@ -67,6 +67,8 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
    const auto& maps = std::get<1>(reduced_data);
+   // list of all facets
+   Matrix<Integer> all_facets;
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
    for ( int i = 0; i < thread_count; ++i )
@@ -76,15 +78,27 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
          while ( true )
          {
             const auto job = job_manager.get();
-            if ( job.empty() )
-            {
-               break;
+            // Check if empty
+             if ( job.empty() )
+             {
+                 break;
+             }
+            // on start up we can not add the jobs to all_facets so we need to do here, which is a bit inefficient
+            Matrix<Integer> new_facets;
+            new_facets.push_back(job);
+            std::cout << "#classes = "<< all_facets.size() << " \n";
+            auto ineq_facets = algorithm::equivalenceGAPList(new_facets, all_facets, input, input, 0);
+            if( ineq_facets.size() > 0){
+                for( auto& facet : ineq_facets) {
+                    all_facets.push_back(facet);
+                }
+                const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
+                job_manager.put(jobs);
             }
-            const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
-            job_manager.put(jobs);
          }
       });
    }
+   // What does this do?
    future.wait();
 }
 
@@ -150,13 +164,15 @@ namespace
       {
          auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
          Matrix<Integer> inequiv_facets;
-         inequiv_facets = algorithm::equivalenceGAPList(facets, matrix, matrix,0);
+         Matrix<Integer> known_facets;
+         inequiv_facets = algorithm::equivalenceGAPList(facets, known_facets,matrix, matrix,0);
          for ( auto& facet : inequiv_facets ) {
              manager.put(facet);
          }
       }
       // Equivalence Check in Known Input
-      Matrix<Integer> known_output_inequiv = algorithm::equivalenceGAPList(known_output, matrix, matrix, 0);
+      Matrix<Integer> known_facets;
+      Matrix<Integer> known_output_inequiv = algorithm::equivalenceGAPList(known_output, known_facets, matrix, matrix, 0);
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
       {

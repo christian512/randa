@@ -133,7 +133,7 @@ bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<In
 }
 
 template <typename Integer>
-Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matrix, const Vertices<Integer>& vertices,
+Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matrix, const Matrix<Integer>& matrix_known, const Vertices<Integer>& vertices,
                                                    const Vertices<Integer>& all_vertices, int recursion_level) {
     /*
      * This function returns the faces that are inequivalent within the matrix given. So it gives the GAP server the full list of FACES and GAP checks which are actually new.
@@ -142,10 +142,14 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     // string to send to gap
     std::string s;
     // add recursion level to string
-    s = "[[" + std::to_string(recursion_level) + "]";
+    s = "[[" ;
     // Iterate over the faces in the matrix and get the vertices on the face
+    // TODO: We should never call this function with empty matrix
+    if( matrix.size() == 0){
+        return matrix;
+    }
     for( auto &row: matrix) {
-        s += ",[";
+        s += "[";
         for (int i = 0; i < vertices.size(); i++) {
             Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), row.cbegin(), Integer{0});
             if (dist == 0) {
@@ -162,9 +166,37 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
         }
         // remove last ","
         s.erase(s.end()-1);
-        s += "]";
+        s += "],";
     }
-    s += "]";
+    s.erase(s.end()-1);
+    s += "],[";
+    // Add the known matrix to the GAP string
+    for( auto &row: matrix_known) {
+        s += "[";
+        for (int i = 0; i < vertices.size(); i++) {
+            Integer dist = std::inner_product(vertices[i].cbegin(), vertices[i].cend(), row.cbegin(), Integer{0});
+            if (dist == 0) {
+                auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
+                if ( it != all_vertices.end()){
+                    int idx = it - all_vertices.begin();
+                    s += std::to_string(idx+1);
+                    s += ",";
+                }
+                else {
+                    std::cerr << "This should not happen! " << std::endl;
+                }
+            }
+        }
+        // remove last ","
+        s.erase(s.end()-1);
+        s += "],";
+    }
+    // remove last comma
+    if( matrix_known.size() > 0) {
+        s.erase(s.end() - 1);
+    }
+    s += "]]";
+
     // COMMUNICATE WITH GAP
     std::string cwd = get_current_dir_name();
     std::ifstream in(cwd + "/fromgap.pipe");

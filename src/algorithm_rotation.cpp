@@ -82,15 +82,7 @@ Matrix<Integer> panda::algorithm::rotation_recursive(const Matrix<Integer> &matr
         const auto new_row = rotate(matrix, furthest_vertex, input, ridge);
         new_rows.push_back(new_row);
     }
-    // Calculate Inequivalent rows
-    Matrix<Integer> inequiv_rows;
-    inequiv_rows = equivalenceGAPList(new_rows, matrix, matrix, curr_recursion_level);
-    // Convert inequiv_rows vector to set
-    std::set <Row<Integer>> output;
-    for (const auto o: inequiv_rows) {
-        output.insert(o);
-    }
-    return classes(output, maps, tag);
+    return new_rows;
 }
 
 template<typename Integer, typename TagType>
@@ -110,8 +102,12 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
     // get the vertices on the face and a single ridge
     const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+    Matrix<Integer> all_ridges;
     Matrix<Integer> inequiv_ridges;
-    inequiv_ridges = equivalenceGAPList(ridges, vertices_on_facet, all_vertices, curr_recursion_level);
+    inequiv_ridges = equivalenceGAPList(ridges, all_ridges,vertices_on_facet, all_vertices, curr_recursion_level);
+    for(const auto &o : inequiv_ridges){
+        all_ridges.push_back(o);
+    }
     // add ridge to output and to newly found ridges
     std::set <Row<Integer>> output;
     std::set <Row<Integer>> new_ridges;
@@ -137,8 +133,9 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
         }
         // perform equivalence check
         Matrix<Integer> inequiv_rows;
-        inequiv_rows = equivalenceGAPList(new_rows, vertices_on_facet, all_vertices, curr_recursion_level);
+        inequiv_rows = equivalenceGAPList(new_rows, all_ridges,vertices_on_facet, all_vertices, curr_recursion_level);
         for (const auto &row : inequiv_rows) {
+            all_ridges.push_back(row);
             output.insert(row);
             // Add new ridge to the new ridges
             new_ridges.insert(row);

@@ -158,8 +158,16 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
 template <typename Integer, typename TagType>
 Row<Integer> panda::List<Integer, TagType>::get() const
 {
+   if (counter == rows.size()){
+       std::cout << "Finished all calculations! \n";
+       const auto it = rows.insert(Row<Integer>{}).first;
+       std::unique_lock<std::mutex> lock(mutex);
+       iterators.push_back(it);
+       condition.notify_all();
+   }
    if ( empty() ) // abort
    {
+      std::cout << "Row is empty \n";
       const auto it = rows.insert(Row<Integer>{}).first;
       std::unique_lock<std::mutex> lock(mutex);
       iterators.push_back(it);
@@ -184,7 +192,7 @@ Row<Integer> panda::List<Integer, TagType>::get() const
       #endif
       std::stringstream stream;
       stream << "Processing #" << counter << " of at least " << rows.size();
-      stream << " class" << ((rows.size() == 1) ? "" : "es") << '\n';
+      stream << " face" << ((rows.size() == 1) ? "" : "s") << '\n';
       std::cerr << stream.str();
    }
    #endif
