@@ -1,6 +1,3 @@
-TODO: ADAPT RECURSION LEVEL (0 means no recursion, 1 means one recursion)
-TODO: Better checks of equivalence in getRidgesRecursive
-
 This is a modified version of the PANDA code described below.
 It includes the possibility to run the Adjacency Decomposition Method in Parallel.
 Additionally this version communicates with GAP to perform fast equivalence checks.

@@ -95,27 +95,28 @@ Matrix<Integer> panda::algorithm::getRidgesRecursive(const Matrix<Integer> &matr
                                                      const Matrix<Integer> &all_vertices,
                                                      int probFlag) {
     // if no recursion just give the ridges by FME
-    if (curr_recursion_level >= max_recursion_level || matrix.size() <= 4) {
+    if (curr_recursion_level > max_recursion_level || matrix.size() <= 4) {
         const auto ridges = getRidges(matrix, input);
         return ridges;
     }
     // get the vertices on the face and a single ridge
     const auto vertices_on_facet = verticesWithZeroDistance(matrix, input);
     auto ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+    // list of all ridges
     Matrix<Integer> all_ridges;
+    // output of all ridges
+    std::set <Row<Integer>> output;
+    // newly found ridges
+    std::set <Row<Integer>> new_ridges;
+    // set of inequivalent ridges
     Matrix<Integer> inequiv_ridges;
     inequiv_ridges = equivalenceGAPList(ridges, all_ridges,vertices_on_facet, all_vertices, curr_recursion_level);
     for(const auto &o : inequiv_ridges){
         all_ridges.push_back(o);
+        output.insert(o);
+        new_ridges.insert(o);
     }
-    // add ridge to output and to newly found ridges
-    std::set <Row<Integer>> output;
-    std::set <Row<Integer>> new_ridges;
-    for (const auto &ridge : inequiv_ridges) {
-        // equivalence check, only consider vertices_on_facet
-        output.insert(ridge);
-        new_ridges.insert(ridge);
-    }
+
     while (!new_ridges.empty()) {
         // take one new face
         auto ridge = *new_ridges.begin();
