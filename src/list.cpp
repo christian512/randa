@@ -94,6 +94,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
    std::tie(it, added) = rows.insert(row);
    if ( added )
    {
+      /*
       if ( std::is_same<TagType, tag::facet>::value )
       {
          algorithm::prettyPrintln(std::cout, row, names, "<=");
@@ -103,6 +104,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row) const
          std::cout << row << '\n';
       }
       std::cout.flush();
+       */
       iterators.push_back(it);
       condition.notify_one();
    }
@@ -142,6 +144,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
       {
          all_polys.push_back(indicesVerticesPolytopeOne);
       }
+      /*
       if ( std::is_same<TagType, tag::facet>::value )
       {
          algorithm::prettyPrintln(std::cout, row, names, "<=");
@@ -151,6 +154,7 @@ void panda::List<Integer, TagType>::put(const Row<Integer>& row, const Vertices<
          std::cout << row << '\n';
       }
       std::cout.flush();
+       */
       iterators.push_back(it);
       condition.notify_one();
    }
@@ -159,7 +163,7 @@ template <typename Integer, typename TagType>
 Row<Integer> panda::List<Integer, TagType>::get() const
 {
    if (counter == rows.size()){
-       std::cout << "Finished all calculations! \n";
+       std::cerr << "Finished all calculations! \n";
        const auto it = rows.insert(Row<Integer>{}).first;
        std::unique_lock<std::mutex> lock(mutex);
        iterators.push_back(it);
@@ -167,7 +171,7 @@ Row<Integer> panda::List<Integer, TagType>::get() const
    }
    if ( empty() ) // abort
    {
-      std::cout << "Row is empty \n";
+      std::cerr << "Row is empty \n";
       const auto it = rows.insert(Row<Integer>{}).first;
       std::unique_lock<std::mutex> lock(mutex);
       iterators.push_back(it);

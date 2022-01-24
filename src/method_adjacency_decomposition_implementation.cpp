@@ -87,7 +87,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                  auto end_time = std::chrono::system_clock::now();
                  auto elapsed =
                          std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-                 std::cout << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
+                 std::cerr << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
                  break;
              }
             // Check if the JOB was already considered
@@ -97,8 +97,10 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             if( ineq_facets.size() > 0){
                 for( auto& facet : ineq_facets) {
                     all_facets.push_back(facet);
+                    std::cout << facet << '\n';
                 }
-                std::cout << "#classes = "<< all_facets.size() << " \n";
+                std::cout.flush();
+                std::cerr << "#classes = "<< all_facets.size() << " \n";
                 const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
                 job_manager.put(jobs);
             }

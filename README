@@ -1,5 +1,4 @@
 TODO: ADAPT RECURSION LEVEL (0 means no recursion, 1 means one recursion)
-TODO: Output only inequivalent classes!
 TODO: Better checks of equivalence in getRidgesRecursive
 
 This is a modified version of the PANDA code described below.
