@@ -138,6 +138,7 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     /*
      * This function returns the faces that are inequivalent within the matrix given. So it gives the GAP server the full list of FACES and GAP checks which are actually new.
      * GAP also compares to already stored faces within the server.
+     * Matrix gives some facets of the sub-polytope and matrix_known some already known facets of the sub-polytope. vertices are the vertices of the sub-polytope and all_vertices the vertices of the initial polytope.
      */
     // string to send to gap
     std::string s;
@@ -195,6 +196,18 @@ Matrix<Integer> panda::algorithm::equivalenceGAPList(const Matrix<Integer>& matr
     if( matrix_known.size() > 0) {
         s.erase(s.end() - 1);
     }
+    // Insert indices of the sub-polytope to allow stabilizer calculations by GAP
+    s += "],[";
+    for(int i = 0; i < vertices.size(); i++){
+        auto it = find(all_vertices.begin(), all_vertices.end(), vertices[i]);
+        int idx = it - all_vertices.begin();
+        s += std::to_string(idx+1);
+        s += ",";
+    }
+    if(vertices.size() > 0){
+        s.erase(s.end()-1);
+    }
+    // close the string
     s += "]]";
 
     // COMMUNICATE WITH GAP
