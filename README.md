@@ -1,3 +1,7 @@
+# TODO: 
+* Allow only one thread as input
+* Compare to PANDA and remove unecessary stuff!
+
 # RANDA
 
 RANDA is an extension of [PANDA](http://comopt.ifi.uni-heidelberg.de/software/PANDA), which implements AdjaceNcy Decomposition Algorithm
