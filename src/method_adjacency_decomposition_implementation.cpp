@@ -25,6 +25,8 @@
 #include "probabilistic.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
+#include <unistd.h>
+#include <fstream>
 
 using namespace panda;
 
@@ -88,6 +90,14 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                  auto elapsed =
                          std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
                  std::cerr << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
+                 // send break to GAP program indicated by negative recursion level
+                std::string cwd = get_current_dir_name();
+                std::ifstream in(cwd + "/fromgap.pipe");
+                std::ofstream out(cwd + "/togap.pipe");
+                std::string line;
+                std::string s = "[[-1],[],[],[]]";
+                out << s << std::endl;
+                 // break the RANDA program
                  break;
              }
             // Check if the JOB was already considered
