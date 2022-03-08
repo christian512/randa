@@ -20,60 +20,8 @@ A running instance of a specific script in GAP, which compares and stores facets
 If no such script is running in GAP, the enumeration using RANDA will not progress. Furthermore (as the name suggests),
 the changes applied here to PANDA remove the parallel functionality. Thus RANDA can only run on a single-core.
 
-## Docker Installation
-For a simple installation process I provide a [Dockerfile](Dockerfile) that allows a quick installation using the Docker engine.
-A guide for installing Docker engine on your computer can be found [here](https://docs.docker.com/engine/install/).
-This guide assumes that you use Ubuntu, but the instructions should work similarly on other operating systems.
 
-To install all software required to run the codes in this repository, you need to clone this repository and build a docker image from the Dockerfile:
-
-```bash
-git clone https://github.com/christian512/randa.git
-cd randa
-sudo docker build -t randa_environment .
-```
-The installation process might take a while. You can now spawn a container from the generated image, which allows you to run any code from this repository. Start the container by:
-
-```bash
-sudo docker run -it randa_environment
-```
-
-From this shell you can run both **RANDA** and **GAP** as described in the example section.
-
-## Example
-In the `/example/` directory I provide example input files for running RANDA and GAP. To run this 
-examples change the directory: 
-
-```bash
-cd example
-```
-
-For the communication between RANDA and GAP you need to create a communication pipe between 
-the two programs. This is done by the `mkfifo` command: 
-
-```bash
-mkfifo fromgap.pipe
-mkfifo togap.pipe
-```
-
-You can start the **GAP** program in the background by running:
-
-```bash
-nohup gap --quitonbreak example_stabilizer_program.g
-```
-Now you can start RANDA which communicates to GAP and enumerates
-all facet-classes of the polytope given by the vertices in `example_vertices.ext`.
-To run RANDA execute:
-
-```bash
-randa example_vertices.ext
-```
-
-You can give any options to RANDA such as:
--r : Recursion level to use (integer)
--p : Flag for enabling the sampling method (1 for activating sampling method, 0 for not)
-
-## Manual Installation
+## Installation
 It is recommended to install RANDA using [CMake](www.cmake.org). On Ubuntu, you can install CMake using the command:
 ```shell
 sudo apt-get install build-essential cmake
@@ -144,3 +92,51 @@ To finish the setup, source the *.bashrc* file.
 source ~/.bashrc
 ```
 Now you should be able to call *gap* from any directory.
+
+## Example
+In the `/example/` directory I provide example input files for running RANDA and GAP. To run this
+examples change the directory:
+
+```bash
+cd example
+```
+
+For the communication between RANDA and GAP you need to create a communication pipe between
+the two programs. This is done by the `mkfifo` command:
+
+```bash
+mkfifo fromgap.pipe
+mkfifo togap.pipe
+```
+
+You can start the **GAP** program by running the following in one Terminal:
+
+```bash
+gap --quitonbreak example_stabilizer_program.g 
+```
+Now you can start RANDA which communicates to GAP and enumerates
+all facet-classes of the polytope given by the vertices in `example_vertices.ext`.
+Note that you have to execute this in a second Terminal as the *GAP* program need to be running while RANDA is executed:
+
+```bash
+randa example_vertices.ext
+```
+
+You can give any options to RANDA such as:
+-r : Recursion level to use (integer)
+-p : Flag for enabling the sampling method (1 for activating sampling method, 0 for not)
+
+## Enumerate different Polyhedra
+
+To enumerate any other polyhedron, you have to give a description of its vertices/rays and its combinatorial symmetry group.
+
+The vertices need to be provided in a format as shown in `example/example_vertices.ext`. This format is also described [here](http://comopt.ifi.uni-heidelberg.de/software/PANDA/format.html).
+The symmetry group, for the particular polyhedron, needs to be given in the *GAP* program. You can use the `example_stabilizer_program.g` as a template. Note that for recursive calls, this program
+calculates the stabilizer as symmetry group for intermediate polyhedra. The symmetry group is defined in line 4 of the file: 
+
+```
+GRP_RED := ();
+```
+You have to give the symmetry group in disjoint cycles for the indices of the vertices (as given in the vertices file). For example, if the exchange of the first vertex with the second vertex is a valid symmetry of
+the polyhedron, this is denoted by `(1,2)`. It is best to provide here only a minimal generating set of the symmetry group, as the calculations will make use of it. 
+
