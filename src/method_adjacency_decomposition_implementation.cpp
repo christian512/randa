@@ -55,7 +55,7 @@ template <template <typename, typename> class JobManagerType, typename Integer, 
 void panda::implementation::adjacencyDecomposition(int argc, char** argv, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data,TagType tag)
 {
    const auto node_count = mpi::getSession().getNumberOfNodes();
-   const auto thread_count = concurrency::numberOfThreads(argc, argv);
+   const auto thread_count = 1;
    // Get the maximum recursion level from the function call
    const auto max_recursion_depth = recursion::recursionDepth(argc, argv);
    int curr_recursion_depth = 0;

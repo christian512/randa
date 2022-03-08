@@ -1,7 +1,3 @@
-# TODO: 
-* Allow only one thread as input
-* Compare to PANDA and remove unecessary stuff!
-
 # RANDA
 
 RANDA is an extension of [PANDA](http://comopt.ifi.uni-heidelberg.de/software/PANDA), which implements AdjaceNcy Decomposition Algorithm
@@ -21,9 +17,63 @@ Accordingly, RANDA is released under CC BY-NC 4.0: http://creativecommons.org/li
 ## Important Note
 RANDA makes use of the computer algebra system GAP, which is used for computational group theory operations. 
 A running instance of a specific script in GAP, which compares and stores facets, is needed in order to execute RANDA properly.
-If no such script is running in GAP, the enumeration using RANDA will not progress.
+If no such script is running in GAP, the enumeration using RANDA will not progress. Furthermore (as the name suggests),
+the changes applied here to PANDA remove the parallel functionality. Thus RANDA can only run on a single-core.
 
-## Install RANDA
+## Docker Installation
+For a simple installation process I provide a [Dockerfile](Dockerfile) that allows a quick installation using the Docker engine.
+A guide for installing Docker engine on your computer can be found [here](https://docs.docker.com/engine/install/).
+This guide assumes that you use Ubuntu, but the instructions should work similarly on other operating systems.
+
+To install all software required to run the codes in this repository, you need to clone this repository and build a docker image from the Dockerfile:
+
+```bash
+git clone https://github.com/christian512/randa.git
+cd randa
+sudo docker build -t randa_environment .
+```
+The installation process might take a while. You can now spawn a container from the generated image, which allows you to run any code from this repository. Start the container by:
+
+```bash
+sudo docker run -it randa_environment
+```
+
+From this shell you can run both **RANDA** and **GAP** as described in the example section.
+
+## Example
+In the `/example/` directory I provide example input files for running RANDA and GAP. To run this 
+examples change the directory: 
+
+```bash
+cd example
+```
+
+For the communication between RANDA and GAP you need to create a communication pipe between 
+the two programs. This is done by the `mkfifo` command: 
+
+```bash
+mkfifo fromgap.pipe
+mkfifo togap.pipe
+```
+
+You can start the **GAP** program in the background by running:
+
+```bash
+nohup gap --quitonbreak example_stabilizer_program.g
+```
+Now you can start RANDA which communicates to GAP and enumerates
+all facet-classes of the polytope given by the vertices in `example_vertices.ext`.
+To run RANDA execute:
+
+```bash
+randa example_vertices.ext
+```
+
+You can give any options to RANDA such as:
+-r : Recursion level to use (integer)
+-p : Flag for enabling the sampling method (1 for activating sampling method, 0 for not)
+
+## Manual Installation
 It is recommended to install RANDA using [CMake](www.cmake.org). On Ubuntu, you can install CMake using the command:
 ```shell
 sudo apt-get install build-essential cmake
@@ -49,7 +99,7 @@ ctest
 sudo make install
 ```
 
-## Install GAP
+### Install GAP
 A detailed instruction on installing GAP can be found [here](https://github.com/gap-system/gap/blob/v4.11.1/INSTALL.md).
 
 GAP requires external library [GMP](www.libgmp.org), which needs to be installed beforehand.
@@ -94,40 +144,3 @@ To finish the setup, source the *.bashrc* file.
 source ~/.bashrc
 ```
 Now you should be able to call *gap* from any directory.
-
-## Setup Communication Files
-
-RANDA communicates with GAP via named pipes. These pipes can be created using *mkfifo*-command and act like files on the file system. 
-The communication needs a pipe for each direction, i.e. two pipes, which are located in the directory where RANDA and GAP are executed.
-For running the Example code navigate to the *example*-directory and create the pipes there.
-
-```shell
-mkfifo fromgap.pipe
-mkfifo togap.pipe
-```
-
-## Run Example Enumeration
-After creating the pipes in the *example*-directory you can run RANDA for the example files given in the directory.
-
-First start execute the GAP script containing symmetry information on the polytope.
-
-```shell
-cd example 
-gap gap_example.g
-```
-
-Now you can start RANDA by calling the file, that describes the vertices of the polytope.
-
-```shell
-randa vertices_example.ext
-```
-
-
-## Options for Running RANDA
-
-
-The following flags are available:
--r : Recursion Depth (standard 0)
--p : Probabilistic Version (standard 0 for not, give 1 for activating this method.)
--t : Number of threads (standard given by system)
-
