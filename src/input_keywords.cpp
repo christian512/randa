@@ -42,7 +42,6 @@ bool panda::input::implementation::isKeyword(const std::string& string) noexcept
            isKeywordInequalities(string) ||
            isKeywordReducedInequalities(string) ||
            isKeywordMaps(string) ||
-           isKeywordVertexMaps(string) ||
            isKeywordNames(string) ||
            isKeywordEnd(string) );
 }
@@ -164,18 +163,6 @@ bool panda::input::implementation::isKeywordMaps(const std::string& string) noex
            string == "MAPS_SECTION:" ||
            string == "Maps" ||
            string == "Maps:");
-}
-
-bool panda::input::implementation::isKeywordVertexMaps(const std::string& string) noexcept
-{
-   return (string == "VERTEXMAPS" ||
-           string == "VERTEXMAPS:" ||
-           string == "VERTEXMAP_SECTION" ||
-           string == "VERTEXMAP_SECTION:" ||
-           string == "VERTEXMAPS_SECTION" ||
-           string == "VERTEXMAPS_SECTION:" ||
-           string == "VertexMaps" ||
-           string == "VertexMaps:");
 }
 
 bool panda::input::implementation::isKeywordNames(const std::string& string) noexcept
