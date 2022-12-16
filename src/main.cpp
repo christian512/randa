@@ -83,9 +83,6 @@ namespace
                 << "\t-c\n\t--check\n"
                 << "\t\tenables check if input is valid (e.g. checks if maps are actually bijections).\n"
                 << '\n'
-                << "\t-t <n>\n\t--threads=<n>\n"
-                << "\t\twith <n> being a natural number greater than zero.\n"
-                << '\n'
                 << "\t-h <arg>\n\t--help=<arg>\n\t--help-command=<arg>\n"
                 << "\t\twith <arg> being a valid command (i.e. one occuring in this list).\n"
                 << '\n'

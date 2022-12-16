@@ -21,21 +21,25 @@
 #include "algorithm_rotation.h"
 #include "algorithm_row_operations.h"
 #include "concurrency.h"
+#include "recursion.h"
+#include "probabilistic.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
+#include <unistd.h>
+#include <fstream>
 
 using namespace panda;
 
 namespace
 {
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer, template <typename, typename> class JobManagerType>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data);
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data);
 
    template <typename Integer>
    std::future<void> initializePool(JobManager<Integer, tag::facet>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&);
@@ -48,17 +52,27 @@ namespace
 }
 
 template <template <typename, typename> class JobManagerType, typename Integer, typename TagType>
-void panda::implementation::adjacencyDecomposition(int argc, char** argv, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data, TagType tag)
+void panda::implementation::adjacencyDecomposition(int argc, char** argv, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data,TagType tag)
 {
    const auto node_count = mpi::getSession().getNumberOfNodes();
-   const auto thread_count = concurrency::numberOfThreads(argc, argv);
+   const auto thread_count = 1;
+   // Get the maximum recursion level from the function call
+   const auto max_recursion_depth = recursion::recursionDepth(argc, argv);
+   int curr_recursion_depth = 0;
+   const auto probFlag = probabilistic::probabilisticFlag(argc, argv);
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
-   JobManagerType<Integer, TagType> job_manager(names, node_count, thread_count);
+   const auto& vertex_maps = std::get<4>(data);
+   // Here the Jobmanager is initialized with the vertices (i.e. input) and the symmetries (i.e. vertex maps).
+   JobManagerType<Integer, TagType> job_manager(names, node_count, thread_count, input, vertex_maps);
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
    const auto& maps = std::get<1>(reduced_data);
+   // list of all facets
+   Matrix<Integer> all_facets;
+   // start timer
+   auto start_time = std::chrono::system_clock::now();
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
    for ( int i = 0; i < thread_count; ++i )
@@ -68,22 +82,49 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
          while ( true )
          {
             const auto job = job_manager.get();
-            if ( job.empty() )
-            {
-               break;
+            // Check if empty
+             if ( job.empty() )
+             {
+                 // calculate execution time
+                 auto end_time = std::chrono::system_clock::now();
+                 auto elapsed =
+                         std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+                 std::cerr << "Found " << all_facets.size() << " classes in " << elapsed.count() << " milliseconds \n";
+                 // send break to GAP program indicated by negative recursion level
+                std::string cwd = get_current_dir_name();
+                std::ifstream in(cwd + "/fromgap.pipe");
+                std::ofstream out(cwd + "/togap.pipe");
+                std::string line;
+                std::string s = "[[-1],[],[],[]]";
+                out << s << std::endl;
+                 // break the RANDA program
+                 break;
+             }
+            // Check if the JOB was already considered
+            Matrix<Integer> new_facets;
+            new_facets.push_back(job);
+            auto ineq_facets = algorithm::equivalenceGAPList(new_facets, all_facets, input, input, 0);
+            if( ineq_facets.size() > 0){
+                for( auto& facet : ineq_facets) {
+                    all_facets.push_back(facet);
+                    std::cout << facet << '\n';
+                }
+                std::cout.flush();
+                std::cerr << "#classes = "<< all_facets.size() << " \n";
+                const auto jobs = algorithm::rotation_recursive(input, job, maps, tag, curr_recursion_depth, max_recursion_depth, probFlag);
+                job_manager.put(jobs);
             }
-            const auto jobs = algorithm::rotation(input, job, maps, tag);
-            job_manager.put(jobs);
          }
       });
    }
+   // What does this do?
    future.wait();
 }
 
 namespace
 {
    template <typename Integer, typename Callable>
-   std::pair<Equations<Integer>, Maps> reduce(const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data, Callable&& callable)
+   std::pair<Equations<Integer>, Maps> reduce(const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data, Callable&& callable)
    {
       const auto& vertices = std::get<0>(data);
       const auto& names = std::get<1>(data);
@@ -99,7 +140,7 @@ namespace
    }
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManager<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       return reduce(data, [](const Matrix<Integer>& equations, const Names& names)
       {
@@ -110,13 +151,13 @@ namespace
    }
 
    template <typename Integer>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerProxy<Integer, tag::facet>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       return reduce(data, [](const Matrix<Integer>&, const Names&) {});
    }
 
    template <typename Integer, template <typename, typename> class JobManagerType>
-   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>>& data)
+   std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>& data)
    {
       const auto& original_maps = std::get<2>(data);
       return std::make_pair(Equations<Integer>{}, original_maps);
@@ -141,16 +182,20 @@ namespace
       else
       {
          auto facets = algorithm::fourierMotzkinEliminationHeuristic(matrix);
-         for ( auto& facet : facets )
-         {
-            facet = algorithm::classRepresentative(facet, maps, TagType{});
+         // Matrix<Integer> inequiv_facets;
+         // Matrix<Integer> known_facets;
+         // inequiv_facets = algorithm::equivalenceGAPList(facets, known_facets,matrix, matrix,0);
+         for ( auto& facet : facets ) {
+             manager.put(facet);
          }
-         manager.put(facets);
       }
+      // Equivalence Check in Known Input
+      Matrix<Integer> known_facets;
+      Matrix<Integer> known_output_inequiv = algorithm::equivalenceGAPList(known_output, known_facets, matrix, matrix, 0);
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
       {
-         for ( const auto& facet : known_output )
+         for ( const auto& facet : known_output_inequiv )
          {
             auto tmp = algorithm::normalize(facet, equations);
             tmp = algorithm::classRepresentative(tmp, maps, TagType{});

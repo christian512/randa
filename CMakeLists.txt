@@ -27,7 +27,7 @@ list(REMOVE_ITEM source_files src/main.cpp)
 # grouping the translation units
 add_library(polypanda ${source_files})
 # associating the main file with the executable target
-add_executable(panda src/main.cpp)
+add_executable(randa src/main.cpp)
 
 # optimization properties
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
@@ -72,13 +72,13 @@ else()
 endif()
 
 # setting flags for compilation and linkage
-target_link_libraries(panda ${CMAKE_THREAD_LIBS_INIT} polypanda)
-set_target_properties(panda polypanda PROPERTIES COMPILE_FLAGS "${compile_flags}")
+target_link_libraries(randa ${CMAKE_THREAD_LIBS_INIT} polypanda)
+set_target_properties(randa polypanda PROPERTIES COMPILE_FLAGS "${compile_flags}")
 if(MPI_LINK_FLAGS)
-  set_target_properties(panda polypanda PROPERTIES LINK_FLAGS "${MPI_CXX_LINK_FLAGS}")
+  set_target_properties(randa polypanda PROPERTIES LINK_FLAGS "${MPI_CXX_LINK_FLAGS}")
 endif()
 
-install(TARGETS panda RUNTIME DESTINATION bin)
+install(TARGETS randa RUNTIME DESTINATION bin)
 
 # test specific rules
 

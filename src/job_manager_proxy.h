@@ -11,6 +11,7 @@
 #include "communication.h"
 #include "matrix.h"
 #include "names.h"
+#include "maps.h"
 #include "row.h"
 #include "tags.h"
 
@@ -29,6 +30,8 @@ namespace panda
          Row<Integer> get() const;
          /// Constructor. The arguments are deliberately ignored in JobManagerProxy.
          JobManagerProxy(const Names&, const int, const int);
+         /// Another constructor, where arguments are ignored
+         JobManagerProxy(const Names&, const int, const int, const Vertices<Integer>& vertices, const VertexMaps&);
       private:
          Communication communication;
    };

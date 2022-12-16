@@ -16,16 +16,24 @@ namespace panda
 {
    EXTERN template class List<Integer, tag::facet>;
    EXTERN template void List<Integer, tag::facet>::put(const Matrix<Integer>&) const;
+   EXTERN template void List<Integer, tag::facet>::put(const Matrix<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template void List<Integer, tag::facet>::put(const Row<Integer>&) const;
+   EXTERN template void List<Integer, tag::facet>::put(const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template Row<Integer> List<Integer, tag::facet>::get() const;
    EXTERN template List<Integer, tag::facet>::List(const Names&);
    EXTERN template bool List<Integer, tag::facet>::empty() const;
+   EXTERN template std::set<int> List<Integer, tag::facet>::indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&) const;
+   EXTERN template std::set<int> List<Integer, tag::facet>::mapVerticesPolytope(std::set<int>, const VertexMap&) const;
 
    EXTERN template class List<Integer, tag::vertex>;
    EXTERN template void List<Integer, tag::vertex>::put(const Matrix<Integer>&) const;
+   EXTERN template void List<Integer, tag::vertex>::put(const Matrix<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template void List<Integer, tag::vertex>::put(const Row<Integer>&) const;
+   EXTERN template void List<Integer, tag::vertex>::put(const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&) const;
    EXTERN template Row<Integer> List<Integer, tag::vertex>::get() const;
    EXTERN template List<Integer, tag::vertex>::List(const Names&);
    EXTERN template bool List<Integer, tag::vertex>::empty() const;
+   EXTERN template std::set<int> List<Integer, tag::vertex>::indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&) const;
+   EXTERN template std::set<int> List<Integer, tag::vertex>::mapVerticesPolytope(std::set<int>, const VertexMap&) const;
 }
 

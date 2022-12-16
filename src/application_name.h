@@ -10,11 +10,11 @@ namespace panda
 {
    namespace project
    {
-      constexpr static auto application_acronym = "PANDA"; /// The short name of the application (acronym).
+      constexpr static auto application_acronym = "RANDA"; /// The short name of the application (acronym).
       static_assert(sizeof(application_acronym) > 0, "Dummy assertion.");
-      constexpr static auto binary_name = "panda"; /// The name of the binary.
+      constexpr static auto binary_name = "randa"; /// The name of the binary.
       static_assert(sizeof(binary_name) > 0, "Dummy assertion.");
-      constexpr static auto application_name = "Parallel AdjaceNcy Decomposition Algorithm"; /// What the acronym stands for.
+      constexpr static auto application_name = "Recursive AdjaceNcy Decomposition Algorithm"; /// What the acronym stands for.
       static_assert(sizeof(application_name) > 0, "Dummy assertion.");
    }
 }
