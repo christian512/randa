@@ -23,7 +23,6 @@ namespace panda
       std::set<int> mapVerticesPolytope(std::set<int>, const VertexMap&);
       /// check the equivalence of two faces given the vertices and the maps
       template <typename Integer>
-      bool equivalenceFaceToFace(const Row<Integer>&, const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&);
       /// check the equivalence using a running GAP server
       template <typename Integer>
       bool equivalenceGAP(const Row<Integer>&, const Vertices<Integer>&);

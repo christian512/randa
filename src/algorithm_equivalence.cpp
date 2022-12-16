@@ -40,7 +40,8 @@ bool panda::algorithm::equivalencePolyToPoly(std::set<int> indicesVertexPolyOne,
 }
 
 std::set<int> panda::algorithm::mapVerticesPolytope(std::set<int> indicesVerticesPoly, const VertexMap &vertex_map) {
-   for (int i = 0; i < vertex_map.size(); i++) {
+   // TODO: Add docs for this function
+    for (int i = 0; i < vertex_map.size(); i++) {
       const auto pos = indicesVerticesPoly.find(i);
       if (pos != indicesVerticesPoly.end()) {
          indicesVerticesPoly.erase(i);
@@ -50,11 +51,6 @@ std::set<int> panda::algorithm::mapVerticesPolytope(std::set<int> indicesVertice
    return indicesVerticesPoly;
 }
 
-template <typename Integer>
-bool panda::algorithm::equivalenceFaceToFace(const Row<Integer>& row_one, const Row<Integer>& row_two, const Vertices<Integer>& vertices,
-                                             const VertexMaps& vertex_maps) {
-   return true;
-}
 
 template <typename Integer>
 bool panda::algorithm::equivalenceGAP(const Row<Integer>& row, const Vertices<Integer>& vertices) {
