@@ -21,6 +21,7 @@
 #include "algorithm_rotation.h"
 #include "algorithm_row_operations.h"
 #include "concurrency.h"
+#include "recursion.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
 
@@ -52,6 +53,16 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
 {
    const auto node_count = mpi::getSession().getNumberOfNodes();
    const auto thread_count = concurrency::numberOfThreads(argc, argv);
+   // Obtain the maximum number of recursions that are allowed
+   const auto recursion_max_depth = recursion::maxNumRecursions(argc, argv);
+   if (recursion_max_depth > 0){
+       std::cout << "Maximum allowed recursive calls: " << recursion_max_depth << std::endl;
+   }
+   // Obtain the minimal number of vertices that are required to allow a recursive call
+   const auto recursion_min_num_vertices = recursion::minNumVertices(argc, argv);
+   if ( recursion_min_num_vertices > 0){
+       std::cout << "Minimum required number of vertices for recursive call: " << recursion_min_num_vertices << std::endl;
+   }
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);

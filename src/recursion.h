@@ -10,8 +10,11 @@ namespace panda
 {
    namespace recursion
    {
-      /// Returns the recursion Depth that should be used
-      int recursionDepth(int, char**);
+      /// Returns the maximum number of recursions to be made
+      int maxNumRecursions(int, char**);
+      /// Returns the minimum number of vertices to allow a recursive call
+      int minNumVertices(int, char**);
+
    }
 }
 

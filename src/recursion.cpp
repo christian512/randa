@@ -22,34 +22,64 @@ namespace
    int interpretParameter(char*);
 }
 
-int panda::recursion::recursionDepth(int argc, char** argv)
+int panda::recursion::maxNumRecursions(int argc, char** argv)
 {
-   assert( argc > 0 && argv != nullptr );
-   for ( int i = 1; i < argc; ++i )
-   {
-      if ( std::strcmp(argv[i], "-r") == 0 )
-      {
-         if ( i + 1 == argc )
-         {
-            throw std::invalid_argument("Command line option \"-r <n>\" needs an integral parameter.");
-         }
-         return interpretParameter(argv[i + 1]);
-      }
-      else if ( std::strncmp(argv[i], "-r=", 3) == 0 )
-      {
-         return interpretParameter(argv[i] + 3);
-      }
-      else if ( std::strncmp(argv[i], "--recursion=", 12) == 0 )
-      {
-         return interpretParameter(argv[i] + 12);
-      }
-      else if ( std::strncmp(argv[i], "-r", 2) == 0 || std::strncmp(argv[i], "--r", 3) == 0 )
-      {
-         throw std::invalid_argument("Illegal parameter. Did you mean \"-r <n>\" or \"--recursion=<n>\"?");
-      }
-   }
-   const auto default_value = 1;
-   return default_value;
+    assert( argc > 0 && argv != nullptr );
+    for ( int i = 1; i < argc; ++i )
+    {
+        if ( std::strcmp(argv[i], "-r") == 0 )
+        {
+            if ( i + 1 == argc )
+            {
+                throw std::invalid_argument("Command line option \"-r <n>\" needs an integral parameter.");
+            }
+            return interpretParameter(argv[i + 1]);
+        }
+        else if ( std::strncmp(argv[i], "-r=", 3) == 0 )
+        {
+            return interpretParameter(argv[i] + 3);
+        }
+        else if ( std::strncmp(argv[i], "--recursion_levels=", 19) == 0 )
+        {
+            return interpretParameter(argv[i] + 10);
+        }
+        else if ( std::strncmp(argv[i], "-r", 2) == 0 || std::strncmp(argv[i], "--r", 3) == 0 )
+        {
+            throw std::invalid_argument("Illegal parameter. Did you mean \"-r <n>\" or \"--recursion_levels=<n>\"?");
+        }
+    }
+    // return default value
+    return 0;
+}
+
+int panda::recursion::minNumVertices(int argc, char** argv)
+{
+    assert( argc > 0 && argv != nullptr );
+    for ( int i = 1; i < argc; ++i )
+    {
+        if ( std::strcmp(argv[i], "-d") == 0 )
+        {
+            if ( i + 1 == argc )
+            {
+                throw std::invalid_argument("Command line option \"-d <n>\" needs an integral parameter.");
+            }
+            return interpretParameter(argv[i + 1]);
+        }
+        else if ( std::strncmp(argv[i], "-d=", 3) == 0 )
+        {
+            return interpretParameter(argv[i] + 3);
+        }
+        else if ( std::strncmp(argv[i], "--recursion_min_numvertices=", 27) == 0 )
+        {
+            return interpretParameter(argv[i] + 10);
+        }
+        else if ( std::strncmp(argv[i], "-d", 2) == 0 || std::strncmp(argv[i], "--d", 3) == 0 )
+        {
+            throw std::invalid_argument("Illegal parameter. Did you mean \"-r <n>\" or \"--recursion_min_numvertices=<n>\"?");
+        }
+    }
+    // return default value
+    return 0;
 }
 
 namespace
@@ -61,7 +91,7 @@ namespace
       int n;
       if ( !(stream >> n) )
       {
-         std::string message = "Command line option \"-r <n>\" / \"--recursion=<n>\"";
+         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
          message += " needs an integral parameter.";
          throw std::invalid_argument(message);
       }
@@ -69,14 +99,14 @@ namespace
       stream >> rest;
       if ( !rest.empty() )
       {
-         std::string message = "Command line option \"-r <n>\" / \"--recursion=<n>\"";
+         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
          message += " needs an integral parameter.";
          throw std::invalid_argument(message);
       }
-      if ( n < 0 )
+      if ( n <= 0 )
       {
-         std::string message = "Command line option \"-r <n>\" / \"--recursion=<n>\"";
-         message += " needs a positive integral parameter.";
+         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
+         message += " needs an integral parameter greater zero.";
          throw std::invalid_argument(message);
       }
       return n;
