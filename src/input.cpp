@@ -25,7 +25,6 @@
 #include "input_dimension.h"
 #include "input_keywords.h"
 #include "input_map.h"
-#include "input_vertexmap.h"
 #include "input_names.h"
 #include "input_order.h"
 #include "input_validity.h"
@@ -113,7 +112,7 @@ namespace
 }
 
 template <>
-std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, VertexMaps> panda::input::vertices<int>(int argc, char** argv)
+std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices<int>(int argc, char** argv)
 {
    const auto filename = getFilename(argc, argv);
    std::ifstream file(filename.c_str());
@@ -126,7 +125,6 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, VertexMaps> panda::inp
    std::size_t dimension = std::numeric_limits<std::size_t>::max();
    Names names;
    Maps maps;
-   VertexMaps vertex_maps;
    if ( !implementation::containsKeywords(file) )
    {
       throw std::invalid_argument("An inner description must be given in PANDA format.");
@@ -144,10 +142,6 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, VertexMaps> panda::inp
       else if ( implementation::isKeywordMaps(token) )
       {
          maps = implementation::maps(file, names);
-      }
-      else if ( implementation::isKeywordVertexMaps(token))
-      {
-         vertex_maps = implementation::vertexMaps(file);
       }
       else if ( implementation::isKeywordConvexHull(token) )
       {
@@ -182,11 +176,11 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, VertexMaps> panda::inp
    {
       input::implementation::checkValidityOfInequalities(vertices, known_facets);
    }
-   return std::make_tuple(vertices, names, maps, known_facets, vertex_maps);
+   return std::make_tuple(vertices, names, maps, known_facets);
 }
 
 template <>
-std::tuple<Inequalities<int>, Names, Maps, Vertices<int>, VertexMaps> panda::input::inequalities<int>(int argc, char** argv)
+std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> panda::input::inequalities<int>(int argc, char** argv)
 {
    const auto filename = getFilename(argc, argv);
    std::ifstream file(filename.c_str());
@@ -199,7 +193,6 @@ std::tuple<Inequalities<int>, Names, Maps, Vertices<int>, VertexMaps> panda::inp
    std::size_t dimension = std::numeric_limits<std::size_t>::max();
    Names names;
    Maps maps;
-   VertexMaps vertex_maps;
    if ( !implementation::containsKeywords(file) )
    {
       throw std::invalid_argument("An outer description must be given in PANDA format.");
@@ -250,7 +243,7 @@ std::tuple<Inequalities<int>, Names, Maps, Vertices<int>, VertexMaps> panda::inp
    {
       input::implementation::checkValidityOfVertices(inequalities, known_vertices);
    }
-   return std::make_tuple(inequalities, names, maps, known_vertices, vertex_maps);
+   return std::make_tuple(inequalities, names, maps, known_vertices);
 }
 
 namespace

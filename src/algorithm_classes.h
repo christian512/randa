@@ -33,15 +33,6 @@ namespace panda
       /// Precondition: if input are facets, then these facets must be normalized.
       template <typename Integer, typename TagType>
       Matrix<Integer> classes(std::set<Row<Integer>>, const Maps&, TagType);
-      // Runs equivalence check using a running GAP server
-      template <typename Integer>
-      bool equivalenceGAP(const Row<Integer>&, const Vertices<Integer>&, const Vertices<Integer>&, int);
-      // Runs the equivalence check by sending multiple polytopes to GAP server
-      template <typename Integer>
-      Matrix<Integer> equivalenceGAPList(const Matrix<Integer>&, const Matrix<Integer>&, const Vertices<Integer>&, const Vertices<Integer>&, int);
-      // Calculates the indices of the vertices that are on the face
-      template <typename Integer>
-      std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&);
    }
 }
 
