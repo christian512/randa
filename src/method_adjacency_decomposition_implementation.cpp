@@ -83,7 +83,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             {
                break;
             }
-            const auto jobs = algorithm::rotation(input, job, maps, tag);
+            const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices);
             job_manager.put(jobs);
          }
       });
