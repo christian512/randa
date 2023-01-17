@@ -99,7 +99,7 @@ namespace
    }
 
    template <typename Integer>
-   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer>& vertices, const Facet<Integer>& facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices)
+   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices)
    {
        // calculate vertices on facet
        const auto vertices_on_facet = verticesWithZeroDistance(vertices, facet);
@@ -111,15 +111,15 @@ namespace
        }
 
        // Obtain some ridges using the heuristic FME method
-       Facets<Integer> unconsidered_ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+       auto unconsidered_ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
        // list of all found ridges
        Facets<Integer> all_ridges;
        // iterate through all
        while ( unconsidered_ridges.size() > 0)
        {
            // get ridges from the unconsidered ridges list
-           const auto& ridge = unconsidered_ridges.back();
-           unconsidered_ridges.pop_back();
+           auto ridge = *unconsidered_ridges.begin();
+           unconsidered_ridges.erase(unconsidered_ridges.begin());
            // add ridge
            all_ridges.push_back(ridge);
            // get subridges (I mean facets of the current ridge by that) with increased recursion level.
