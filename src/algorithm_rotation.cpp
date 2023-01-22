@@ -29,7 +29,7 @@ namespace
    Inequalities<Integer> getRidges(const Vertices<Integer>&, const Facet<Integer>&);
    /// Returns ridges by using recursive calls of the Adjacency Decomposition metho
    template <typename Integer>
-   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer>&, const Facet<Integer>&, int, int, int);
+   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer>&, const Facet<Integer>&, int, int, int, bool);
    /// Returns all vertices that lie on the facet (satisfy the inequality with equality).
    template <typename Integer>
    Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer>&, const Facet<Integer>&);
@@ -41,7 +41,8 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer>& matrix,
                                     const Maps& maps,
                                     TagType tag,
                                     int max_rec_depth,
-                                    int min_num_vertices)
+                                    int min_num_vertices,
+                                    bool sampling_flag)
 {
    // as the first step of the rotation, the furthest Vertex w.r.t. the input facet is calculated.
    // this will be the same vertex for all neighbouring ridges, hence, only needs to be computed once.
@@ -49,7 +50,7 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer>& matrix,
    // define current recursion depth
    int curr_recursion_depth = 0;
    // Get the ridges using the recursive functionality.
-   const auto ridges = getRidgesRecursive(matrix, input, curr_recursion_depth, max_rec_depth, min_num_vertices);
+   const auto ridges = getRidgesRecursive(matrix, input, curr_recursion_depth, max_rec_depth, min_num_vertices, sampling_flag);
    std::set<Row<Integer>> output;
    for ( const auto& ridge : ridges )
    {
@@ -99,7 +100,7 @@ namespace
    }
 
    template <typename Integer>
-   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices)
+   Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices, bool sampling_flag)
    {
        // calculate vertices on facet
        const auto vertices_on_facet = verticesWithZeroDistance(vertices, facet);
@@ -123,22 +124,20 @@ namespace
            // add ridge
            all_ridges.push_back(ridge);
            // get subridges (I mean facets of the current ridge by that) with increased recursion level.
-           Facets<Integer> subridges = getRidgesRecursive(vertices_on_facet, ridge, curr_rec_depth + 1, max_rec_depth, min_num_vertices);
+           Facets<Integer> subridges = getRidgesRecursive(vertices_on_facet, ridge, curr_rec_depth + 1, max_rec_depth, min_num_vertices, sampling_flag);
            // calculate furthest vertex
            const auto furthest_vertex = algorithm::furthestVertex(vertices_on_facet, ridge);
            // rotate the ridge around it's subridges
            for (const auto& sr: subridges)
            {
                const auto new_ridge = rotate(vertices_on_facet, furthest_vertex, ridge, sr);
-               // TODO: THIS IS WHERE I CAN INSERT THE SAMPLING ARGUMENT. If sampling is activated we only put the new ridge into all_ridges.
-               // Check if ridge is already in all_ridges and add to unconsidered if not
-               if (std::find(all_ridges.begin(), all_ridges.end(), new_ridge) == all_ridges.end())
+               // Check if ridge is already in all_ridges and add to unconsidered if we are not sampling
+               if (!sampling_flag && std::find(all_ridges.begin(), all_ridges.end(), new_ridge) == all_ridges.end())
                {
                     unconsidered_ridges.push_back(new_ridge);
                }
            }
        }
-
        return all_ridges;
    }
 

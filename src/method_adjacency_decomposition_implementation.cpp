@@ -22,6 +22,7 @@
 #include "algorithm_row_operations.h"
 #include "concurrency.h"
 #include "recursion.h"
+#include "sampling.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
 
@@ -63,6 +64,11 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    if ( recursion_min_num_vertices > 0){
        std::cout << "Minimum required number of vertices for recursive call: " << recursion_min_num_vertices << std::endl;
    }
+   // Check if the sampling flag is set
+   const auto sampling_flag = sampling::samplingFlag(argc, argv);
+   if ( sampling_flag) {
+       std::cout << "Activated the sampling method" << std::endl;
+   }
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
@@ -83,7 +89,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
             {
                break;
             }
-            const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices);
+            const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices, sampling_flag);
             job_manager.put(jobs);
          }
       });
