@@ -91,7 +91,7 @@ namespace
       int n;
       if ( !(stream >> n) )
       {
-         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
+         std::string message = "Command line option \"-d <n>\" ";
          message += " needs an integral parameter.";
          throw std::invalid_argument(message);
       }
@@ -99,13 +99,13 @@ namespace
       stream >> rest;
       if ( !rest.empty() )
       {
-         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
+         std::string message = "Command line option \"-d <n>\" ";
          message += " needs an integral parameter.";
          throw std::invalid_argument(message);
       }
       if ( n <= 0 )
       {
-         std::string message = "Command line option \"-t <n>\" / \"--threads=<n>\"";
+         std::string message = "Command line option \"-d <n>\" ";
          message += " needs an integral parameter greater zero.";
          throw std::invalid_argument(message);
       }
