@@ -25,6 +25,7 @@
 #include "sampling.h"
 #include "joining_thread.h"
 #include "message_passing_interface_session.h"
+#include "gap.h"
 
 using namespace panda;
 
@@ -69,6 +70,12 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    if ( sampling_flag) {
        std::cout << "Activated the sampling method" << std::endl;
    }
+
+   // Initialize GAP
+   std::cout << "Starting GAP (take 10 seconds)" << std::endl;
+   Gap gap;
+   gap.initialize();
+   // Read inputs
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
    const auto& known_output = std::get<3>(data);
@@ -76,6 +83,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
    const auto& maps = std::get<1>(reduced_data);
+
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
    for ( int i = 0; i < thread_count; ++i )
@@ -95,6 +103,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
       });
    }
    future.wait();
+   gap.stop();
 }
 
 namespace
