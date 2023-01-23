@@ -121,7 +121,6 @@ namespace
 }
 
 template <>
-// TODO: Edit this function to read the symmetries as well
 std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, Symmetries> panda::input::vertices<int>(int argc, char** argv)
 {
    const auto filename = getFilename(argc, argv);
@@ -195,7 +194,7 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, Symmetries> panda::inp
 }
 
 template <>
-std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> panda::input::inequalities<int>(int argc, char** argv)
+std::tuple<Inequalities<int>, Names, Maps, Vertices<int>, Symmetries> panda::input::inequalities<int>(int argc, char** argv)
 {
    const auto filename = getFilename(argc, argv);
    std::ifstream file(filename.c_str());
@@ -208,6 +207,7 @@ std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> panda::input::inequali
    std::size_t dimension = std::numeric_limits<std::size_t>::max();
    Names names;
    Maps maps;
+    Symmetries symmetries;
    if ( !implementation::containsKeywords(file) )
    {
       throw std::invalid_argument("An outer description must be given in PANDA format.");
@@ -238,6 +238,10 @@ std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> panda::input::inequali
       {
          inequalities = readReducedInequalities(argc, argv, file, names, maps, equations);
       }
+      else if ( implementation::isKeywordSymmetries(token) )
+      {
+          std::cout << "Can not use symmetries in vertex enumeration mode!" << std::endl;
+      }
       else
       {
          std::getline(file, token);
@@ -258,7 +262,7 @@ std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> panda::input::inequali
    {
       input::implementation::checkValidityOfVertices(inequalities, known_vertices);
    }
-   return std::make_tuple(inequalities, names, maps, known_vertices);
+   return std::make_tuple(inequalities, names, maps, known_vertices, symmetries);
 }
 
 namespace
