@@ -46,7 +46,13 @@ bool panda::Gap::stop() const {
     std::string cmd = "pkill -15 gap.sh";
     const char * c = cmd.c_str();
     std::system(c);
-    // TODO: Remove FIFO files.
+    // Remove FIFO files.
+    cmd = "rm ";
+    cmd.append(fifo_from_gap);
+    cmd.append(" ");
+    cmd.append(fifo_to_gap);
+    c = cmd.c_str();
+    std::system(c);
     return true;
 }
 
