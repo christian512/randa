@@ -23,7 +23,7 @@ Symmetries panda::input::implementation::symmetries(std::istream& stream)
    while ( stream )
    {
       const auto symmetry = ::symmetry(stream);
-      if (contains_valid_chars(symmetry))
+      if (symmetry.find_first_not_of("0123456789(,) ") == std::string::npos)
       {
          symmetries.push_back(symmetry);
       }
@@ -42,11 +42,6 @@ namespace
        std::getline(stream, line);
        // TODO: Maybe I have to cutoff the \n in the end here.
        return line;
-   }
-
-   bool contains_valid_chars(std::string const &line)
-   {
-       return line.find_first_not_of("0123456789(,) ") == std::string::npos;
    }
 }
 
