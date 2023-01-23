@@ -1,6 +1,7 @@
 
 //-------------------------------------------------------------------------------//
 // Author: Stefan Lörwald, Universität Heidelberg                                //
+// Edited: Christian Staufenbiel                                                 //
 // License: CC BY-NC 4.0 http://creativecommons.org/licenses/by-nc/4.0/legalcode //
 //-------------------------------------------------------------------------------//
 
@@ -29,6 +30,7 @@
 #include "input_order.h"
 #include "input_validity.h"
 #include "input_vertex.h"
+#include "input_symmetries.h"
 #include "istream_peek_line.h"
 
 using namespace panda;
@@ -109,10 +111,18 @@ namespace
       expandInequalities(inequalities, tmp_maps);
       return inequalities;
    }
+
+   Symmetries readSymmetries(std::ifstream& file)
+   {
+      // Obtain symmetries and return them
+      auto symmetries = input::implementation::symmetries(file);
+      return symmetries;
+   }
 }
 
 template <>
-std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices<int>(int argc, char** argv)
+// TODO: Edit this function to read the symmetries as well
+std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, Symmetries> panda::input::vertices<int>(int argc, char** argv)
 {
    const auto filename = getFilename(argc, argv);
    std::ifstream file(filename.c_str());
@@ -125,6 +135,7 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
    std::size_t dimension = std::numeric_limits<std::size_t>::max();
    Names names;
    Maps maps;
+   Symmetries symmetries;
    if ( !implementation::containsKeywords(file) )
    {
       throw std::invalid_argument("An inner description must be given in PANDA format.");
@@ -159,6 +170,10 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
       {
          cone = readVerticesReducedConical(argc, argv, file, maps);
       }
+      else if ( implementation::isKeywordSymmetries(token) )
+      {
+         symmetries = readSymmetries(file);
+      }
       else
       {
          std::getline(file, token);
@@ -176,7 +191,7 @@ std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> panda::input::vertices
    {
       input::implementation::checkValidityOfInequalities(vertices, known_facets);
    }
-   return std::make_tuple(vertices, names, maps, known_facets);
+   return std::make_tuple(vertices, names, maps, known_facets, symmetries);
 }
 
 template <>

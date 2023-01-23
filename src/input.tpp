@@ -7,13 +7,14 @@
 #include "cast.h"
 
 template <typename Integer>
-std::tuple<panda::Vertices<Integer>, panda::Names, panda::Maps, panda::Inequalities<Integer>> panda::input::vertices(int argc, char** argv)
+std::tuple<panda::Vertices<Integer>, panda::Names, panda::Maps, panda::Inequalities<Integer>, panda::Symmetries> panda::input::vertices(int argc, char** argv)
 {
    const auto data = vertices<int>(argc, argv);
    return std::make_tuple(cast<Integer>(std::get<0>(data)),  // vertices
                           std::get<1>(data),                 // names
                           std::get<2>(data),                 // maps
-                          cast<Integer>(std::get<3>(data))); // inequalities
+                          cast<Integer>(std::get<3>(data)),  // inequalities
+                          std::get<4>(data));                // symmetries
 }
 
 template <typename Integer>

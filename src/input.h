@@ -13,6 +13,7 @@
 #include "matrix.h"
 #include "names.h"
 #include "row.h"
+#include "symmetries.h"
 
 namespace panda
 {
@@ -20,14 +21,14 @@ namespace panda
    {
       /// Reads a conical/convex hull description with optional names and maps.
       template <typename Integer>
-      std::tuple<Vertices<Integer>, Names, Maps, Inequalities<Integer>> vertices(int, char**);
+      std::tuple<Vertices<Integer>, Names, Maps, Inequalities<Integer>, Symmetries> vertices(int, char**);
       /// Reads an inequality description with optional names and maps.
       template <typename Integer>
       std::tuple<Inequalities<Integer>, Names, Maps, Vertices<Integer>> inequalities(int, char**);
 
       // explicit template instantiations
       template <>
-      std::tuple<Vertices<int>, Names, Maps, Inequalities<int>> vertices<int>(int, char**);
+      std::tuple<Vertices<int>, Names, Maps, Inequalities<int>, Symmetries> vertices<int>(int, char**);
       template <>
       std::tuple<Inequalities<int>, Names, Maps, Vertices<int>> inequalities<int>(int, char**);
    }
