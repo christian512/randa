@@ -187,3 +187,15 @@ bool panda::input::implementation::isKeywordNames(const std::string& string) noe
            string == "Names:");
 }
 
+bool panda::input::implementation::isKeywordSymmetries(const std::string& string) noexcept
+{
+    return (string == "SYMMETRY" ||
+            string == "SYMMETRY:" ||
+            string == "SYMMETRIES" ||
+            string == "SYMMETRIES:" ||
+            string == "Symmetries" ||
+            string == "Symmetries:" ||
+            string == "Symmetry" ||
+            string == "Symmetry:");
+}
+
