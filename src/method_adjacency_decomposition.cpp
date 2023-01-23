@@ -96,7 +96,6 @@ namespace
    try
    {
       assert( argc > 0 && argv != nullptr );
-      // TODO: This also has to return symmetries
       auto data = input::inequalities<Integer>(argc, argv);
       const auto& mpi_session = mpi::getSession();
       if ( mpi_session.isMaster() )
