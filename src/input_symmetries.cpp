@@ -23,7 +23,7 @@ Symmetries panda::input::implementation::symmetries(std::istream& stream)
    while ( stream )
    {
       const auto symmetry = ::symmetry(stream);
-      if (symmetry.find_first_not_of("0123456789(,) ") == std::string::npos)
+      if (symmetry.find_first_not_of("0123456789(,) ") == std::string::npos && !symmetry.empty())
       {
          symmetries.push_back(symmetry);
       }

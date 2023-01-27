@@ -43,7 +43,8 @@ bool panda::input::implementation::isKeyword(const std::string& string) noexcept
            isKeywordReducedInequalities(string) ||
            isKeywordMaps(string) ||
            isKeywordNames(string) ||
-           isKeywordEnd(string) );
+           isKeywordEnd(string) ||
+           isKeywordSymmetries(string) );
 }
 
 bool panda::input::implementation::isKeywordEnd(const std::string& string) noexcept
