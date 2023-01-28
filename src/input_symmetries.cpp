@@ -40,7 +40,6 @@ namespace
        // Get line from the stream
        std::string line;
        std::getline(stream, line);
-       // TODO: Maybe I have to cutoff the \n in the end here.
        return line;
    }
 }

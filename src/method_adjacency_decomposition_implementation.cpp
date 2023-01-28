@@ -41,13 +41,13 @@ namespace
    std::pair<Equations<Integer>, Maps> reduce(const JobManagerType<Integer, tag::vertex>&, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, Symmetries>& data);
 
    template <typename Integer>
-   std::future<void> initializePool(JobManager<Integer, tag::facet>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&);
+   std::future<void> initializePool(JobManager<Integer, tag::facet>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&, Gap&);
 
    template <typename Integer>
-   std::future<void> initializePool(JobManager<Integer, tag::vertex>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&);
+   std::future<void> initializePool(JobManager<Integer, tag::vertex>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&, Gap&);
 
    template <typename Integer, typename TagType>
-   std::future<void> initializePool(JobManagerProxy<Integer, TagType>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&);
+   std::future<void> initializePool(JobManagerProxy<Integer, TagType>&, const Matrix<Integer>&, const Maps&, const Matrix<Integer>&, const Equations<Integer>&, Gap&);
 }
 
 template <template <typename, typename> class JobManagerType, typename Integer, typename TagType>
@@ -83,14 +83,14 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto& maps = std::get<1>(reduced_data);
 
     // Initialize GAP
-    Gap gap;
+    panda::Gap gap;
     if (symmetries.size() > 0){
         std::cout << "Starting GAP (take 10 seconds)" << std::endl;
         gap.initialize(symmetries, input);
     }
 
    std::list<JoiningThread> threads;
-   auto future = initializePool(job_manager, input, maps, known_output, equations);
+   auto future = initializePool(job_manager, input, maps, known_output, equations, gap);
    for ( int i = 0; i < thread_count; ++i )
    {
       threads.emplace_front([&]()
@@ -103,11 +103,10 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                break;
             }
             const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices, sampling_flag);
-            // TODO: Move equivalence check
             std::vector<int> inequiv_indices_jobs = gap.equivalence(jobs, input);
             Matrix<Integer> new_jobs;
-            for ( auto i : inequiv_indices_jobs){
-                new_jobs.insert(new_jobs.end(), jobs[i]);
+            for ( auto j : inequiv_indices_jobs){
+                new_jobs.insert(new_jobs.end(), jobs[j]);
             }
             job_manager.put(new_jobs);
          }
@@ -160,7 +159,7 @@ namespace
    }
 
    template <typename Integer, typename TagType>
-   std::future<void> initializationOnMaster(JobManager<Integer, TagType>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>& equations, const std::string& type_string)
+   std::future<void> initializationOnMaster(JobManager<Integer, TagType>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>& equations, const std::string& type_string, Gap& tmp_gap)
    {
       assert ( (!std::is_same<TagType, tag::vertex>::value || equations.empty()) );
       if ( !maps.empty() )
@@ -182,7 +181,13 @@ namespace
          {
             facet = algorithm::classRepresentative(facet, maps, TagType{});
          }
-         manager.put(facets);
+         // Check for equivalence on facets
+         std::vector<int> inequiv_indices_jobs = tmp_gap.equivalence(facets, matrix);
+         Matrix<Integer> new_jobs;
+         for ( auto j : inequiv_indices_jobs){
+             new_jobs.insert(new_jobs.end(), facets[j]);
+         }
+         manager.put(new_jobs);
       }
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
@@ -198,19 +203,19 @@ namespace
    }
 
    template <typename Integer>
-   std::future<void> initializePool(JobManager<Integer, tag::facet>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>& equations)
+   std::future<void> initializePool(JobManager<Integer, tag::facet>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>& equations, Gap& gap_tmp)
    {
-      return initializationOnMaster(manager, matrix, maps, known_output, equations, "Inequalities");
+      return initializationOnMaster(manager, matrix, maps, known_output, equations, "Inequalities", gap_tmp);
    }
 
    template <typename Integer>
-   std::future<void> initializePool(JobManager<Integer, tag::vertex>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>&)
+   std::future<void> initializePool(JobManager<Integer, tag::vertex>& manager, const Matrix<Integer>& matrix, const Maps& maps, const Matrix<Integer>& known_output, const Equations<Integer>&, Gap& gap_tmp)
    {
-      return initializationOnMaster(manager, matrix, maps, known_output, {}, "Vertices / Rays");
+      return initializationOnMaster(manager, matrix, maps, known_output, {}, "Vertices / Rays", gap_tmp);
    }
 
    template <typename Integer, typename TagType>
-   std::future<void> initializePool(JobManagerProxy<Integer, TagType>&, const ConvexHull<Integer>&, const Maps&, const Inequalities<Integer>&, const Equations<Integer>&)
+   std::future<void> initializePool(JobManagerProxy<Integer, TagType>&, const ConvexHull<Integer>&, const Maps&, const Inequalities<Integer>&, const Equations<Integer>&, Gap& gap_tmp)
    {
       // only the manager on the root node performs a heuristic to get initial facets.
       auto future = std::async(std::launch::async, [](){});

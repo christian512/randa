@@ -19,6 +19,8 @@ namespace panda
     class Gap
     {
     public:
+        /// Constructor
+        Gap();
         /// initializes GAP
         template <typename Integer>
         bool initialize(Symmetries, const Vertices<Integer>&);

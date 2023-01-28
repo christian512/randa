@@ -20,6 +20,10 @@
 
 using namespace panda;
 
+panda::Gap::Gap(){
+
+}
+
 void panda::Gap::execute(){
     // executes the GAP command
     // starting a gap process
@@ -78,7 +82,6 @@ bool panda::Gap::stop() const {
 
 template <typename Integer>
 std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Vertices<Integer>& vertices) {
-    // TODO: Implement
     // string to send to GAP
     std::string to_gap = "[";
     // iterate through facets
@@ -97,9 +100,6 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
     to_gap.pop_back();
     to_gap.append("]");
 
-    // temporary print out to_gap string
-    std::cout << "String to GAP: " << to_gap << std::endl;
-
     // connect to GAP using the pipes
     std::ifstream in(fifo_from_gap);
     std::ofstream out(fifo_to_gap);
@@ -107,12 +107,11 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
 
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
-    // TODO: Send string to GAP and read response
+
     // write string to out
     out << to_gap << std::endl;
     // get incoming line
     std::getline(in, line);
-    std::cout << "Got line: " << line << std::endl;
 
     // process line
     std::remove(line.begin(), line.end(), ' ');
@@ -137,11 +136,6 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
     // take last entry
     int idx = std::stoi(line);
     result.push_back(idx);
-    std::cout << "Result GAP: ";
-    for (auto i : result){
-        std::cout << std::to_string(i) << ",";
-    }
-    std::cout << std::endl;
     return result;
 }
 
@@ -234,7 +228,7 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "            if Length(response) = 0 then\n"
                    "                IO_WriteLine(outfile, \"false\");\n"
                    "            else\n"
-                   "                 Print(\"GAP FOUND: \", response);\n"
+                   "                # Print(\"GAP FOUND: \", response);\n"
                    "                IO_WriteLine(outfile, response);\n"
                    "            fi;\n"
                    "        fi;\n"

@@ -38,7 +38,6 @@ using namespace panda;
 template <typename Integer, typename TagType>
 void panda::List<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 {
-   // TODO: here I have to insert the equivalence test right here by calling the new GAP class
    for ( const auto& row : matrix )
    {
       put(row);
