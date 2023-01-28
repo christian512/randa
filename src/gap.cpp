@@ -100,19 +100,23 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
     to_gap.pop_back();
     to_gap.append("]");
 
+    std::cout << "Writing to GAP: " << to_gap << std::endl;
+    // lock the gap mutex
+    std::lock_guard<std::mutex> lock(mutex);
+
+
     // connect to GAP using the pipes
     std::ifstream in(fifo_from_gap);
     std::ofstream out(fifo_to_gap);
     std::string line;
 
-    // lock the gap mutex
-    std::lock_guard<std::mutex> lock(mutex);
 
     // write string to out
     out << to_gap << std::endl;
+    std::flush(out);
     // get incoming line
     std::getline(in, line);
-
+    std::cout << "Got from GAP: " << line << std::endl;
     // process line
     std::remove(line.begin(), line.end(), ' ');
 
@@ -201,7 +205,7 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "while str <> \"break\" do\n"
                    "        # read command from input\n"
                    "        if str <> \"\" then\n"
-                   "            # Print(\"GAP READ: \", str);\n"
+                   "            Print(\"GAP READ: \", str);\n"
                    "            # Convert to GAP Object\n"
                    "            tarr := JsonStringToGap(str);\n"
                    "\n"
