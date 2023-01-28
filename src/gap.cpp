@@ -112,11 +112,36 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
     out << to_gap << std::endl;
     // get incoming line
     std::getline(in, line);
-
     std::cout << "Got line: " << line << std::endl;
+
+    // process line
+    std::remove(line.begin(), line.end(), ' ');
 
     // temporary return
     std::vector<int> result;
+    if (line == "false"){
+        return result;
+    }
+    // remove leading [ and trailing ]
+    line.erase(0, 1);
+    line.erase(line.end()-1);
+    // read from the remaining string
+    int pos = 0;
+    std::string token;
+    while ((pos = line.find(",")) != std::string::npos) {
+        token = line.substr(0, pos);
+        int idx = std::stoi(token);
+        result.push_back(idx);
+        line.erase(0, pos+1);
+    }
+    // take last entry
+    int idx = std::stoi(line);
+    result.push_back(idx);
+    std::cout << "Result GAP: ";
+    for (auto i : result){
+        std::cout << std::to_string(i) << ",";
+    }
+    std::cout << std::endl;
     return result;
 }
 
