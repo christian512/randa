@@ -29,13 +29,14 @@ namespace panda
         /// checks for equivalence using GAP
         template <typename Integer>
         std::vector<int> equivalence(const Facets<Integer>&, const Vertices<Integer>&);
+        bool running = false;
     private:
         mutable std::mutex mutex;
 
         const char *fifo_to_gap = "./togap.pipe";
         const char *fifo_from_gap = "./fromgap.pipe";
         const char *gap_prg_file = "gap_prg.g";
-        bool running = false;
+
         std::map<std::string, int> vertex_lookup;
 
     private:
