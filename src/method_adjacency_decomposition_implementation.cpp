@@ -86,7 +86,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
     Gap gap;
     if (symmetries.size() > 0){
         std::cout << "Starting GAP (take 10 seconds)" << std::endl;
-        gap.initialize(symmetries);
+        gap.initialize(symmetries, input);
     }
 
 

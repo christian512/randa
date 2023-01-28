@@ -4,7 +4,10 @@
 // License: CC BY-NC 4.0 http://creativecommons.org/licenses/by-nc/4.0/legalcode //
 //-------------------------------------------------------------------------------//
 
+#define COMPILE_TEMPLATE_GAP
 #include "gap.h"
+#undef COMPILE_TEMPLATE_GAP
+
 #include "symmetries.h"
 #include <sys/stat.h>
 #include <chrono>
@@ -24,8 +27,8 @@ void panda::Gap::execute(){
     const char *c = cmd.c_str();
     std::system(c);
 }
-
-bool panda::Gap::initialize(Symmetries symmetries){
+template <typename Integer>
+bool panda::Gap::initialize(Symmetries symmetries, const Vertices<Integer>& vertices){
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
     // creating pipes
@@ -33,16 +36,13 @@ bool panda::Gap::initialize(Symmetries symmetries){
     mkfifo(fifo_from_gap, 0666);
     //  Write GAP program with symmetries
     Gap::write_gap_prg(symmetries);
-
-    // wait until gap is initialized
-    // std::thread t(&panda::Gap::execute, this);
-    // thread_handle = t.native_handle();
-    // t.detach();
+    // Execute GAP and wait for startup
     execute();
-    // TODO: Use the following example to kill the thread
-    // https://www.bo-yang.net/2017/11/19/cpp-kill-detached-thread
     std::chrono::seconds dura(10);
     std::this_thread::sleep_for(dura);
+
+    // Generate the lookup table for the vertex
+    fill_lookup_table(vertices);
 
     // set status to running
     running = true;
@@ -72,11 +72,41 @@ bool panda::Gap::stop() const {
 }
 
 std::vector<int> panda::Gap::equivalence() const {
+    // TODO: Implement
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
     // temporary return
     std::vector<int> result;
     return result;
+}
+
+template <typename Integer>
+std::string panda::Gap::vertex_to_string(const Vertex<Integer>& vertex) {
+    std::string s;
+    for (const auto v: vertex){
+        s.append(std::to_string(v));
+    }
+    return s;
+}
+
+template <typename Integer>
+bool panda::Gap::fill_lookup_table(const Vertices<Integer>& vertices) {
+    // Iterate through vertices
+    for ( int i = 0; i < vertices.size(); i++ ){
+        const auto v = vertices[i];
+        // Convert vertex to string
+        std::string s = vertex_to_string(v);
+        // add string to lookup table together with integer
+        vertex_lookup[s] = i + 1;
+    }
+    return true;
+}
+
+template <typename Integer>
+int panda::Gap::get_index(const Vertex<Integer>& vertex) {
+    // Convert vertex to string and return lookup value
+    std::string s = vertex_to_string(vertex);
+    return vertex_lookup[s];
 }
 
 bool panda::Gap::write_gap_prg(Symmetries symmetries) {
