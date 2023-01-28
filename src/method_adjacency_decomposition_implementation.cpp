@@ -70,8 +70,6 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    if ( sampling_flag) {
        std::cout << "Activated the sampling method" << std::endl;
    }
-
-
    // Read inputs
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
@@ -103,16 +101,22 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                break;
             }
             const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices, sampling_flag);
-            std::vector<int> inequiv_indices_jobs = gap.equivalence(jobs, input);
-            Matrix<Integer> new_jobs;
-            for ( auto j : inequiv_indices_jobs){
-                new_jobs.insert(new_jobs.end(), jobs[j]);
+            if (gap.running){
+                std::vector<int> inequiv_indices_jobs = gap.equivalence(jobs, input);
+                Matrix<Integer> new_jobs;
+                for ( auto j : inequiv_indices_jobs){
+                    new_jobs.insert(new_jobs.end(), jobs[j]);
+                }
+                job_manager.put(new_jobs);
+            } else {
+                job_manager.put(jobs);
             }
-            job_manager.put(new_jobs);
+
          }
       });
    }
    future.wait();
+   // stop GAP
    gap.stop();
 }
 
@@ -182,12 +186,17 @@ namespace
             facet = algorithm::classRepresentative(facet, maps, TagType{});
          }
          // Check for equivalence on facets
-         std::vector<int> inequiv_indices_jobs = tmp_gap.equivalence(facets, matrix);
-         Matrix<Integer> new_jobs;
-         for ( auto j : inequiv_indices_jobs){
-             new_jobs.insert(new_jobs.end(), facets[j]);
+         if (tmp_gap.running){
+             std::vector<int> inequiv_indices_jobs = tmp_gap.equivalence(facets, matrix);
+             Matrix<Integer> new_jobs;
+             for ( auto j : inequiv_indices_jobs){
+                 new_jobs.insert(new_jobs.end(), facets[j]);
+             }
+             manager.put(new_jobs);
+         } else {
+             manager.put(facets);
          }
-         manager.put(new_jobs);
+
       }
       // Add the remaining known facets from file asynchronously.
       auto future = std::async(std::launch::async, [&]()
