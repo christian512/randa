@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 
 using namespace panda;
 
@@ -54,6 +55,9 @@ bool panda::Gap::stop() const {
     if (!running){
         return true;
     }
+    std::cout << "Shutting down GAP" << std::endl;
+    std::chrono::seconds dura(2);
+    std::this_thread::sleep_for(dura);
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
     // Kill the gap command
@@ -108,7 +112,6 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
     out << to_gap << std::endl;
     // get incoming line
     std::getline(in, line);
-    std::remove(line.begin(), line.end(), ' ');
 
     std::cout << "Got line: " << line << std::endl;
 
@@ -163,14 +166,15 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
     gap_prg.append(");\n");
 
     // Add files to GAP
-    gap_prg.append("# setup files\noutfile := IO_File(Concatenation(IO_getcwd(), \"/");
+    gap_prg.append("# setup files\noutfile := IO_File(\"");
     gap_prg.append(fifo_from_gap);
-    gap_prg.append("\"), \"w\");\ninfile := IO_File(Concatenation(IO_getcwd(), \"/");
+    gap_prg.append("\", \"w\");\ninfile := IO_File(\"");
     gap_prg.append(fifo_to_gap);
-    gap_prg.append("\"), \"r\");\n");
+    gap_prg.append("\", \"r\");\n");
 
     // Write the actual logic of the GAP file
     gap_prg.append("# List of all facets\n"
+                   "# Print(\"STARTED GAP\")\n;"
                    "karr := [];\n"
                    "\n"
                    "\n"
@@ -178,7 +182,7 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "while str <> \"break\" do\n"
                    "        # read command from input\n"
                    "        if str <> \"\" then\n"
-                   "            #Print(\"GAP READ: \", str);\n"
+                   "            # Print(\"GAP READ: \", str);\n"
                    "            # Convert to GAP Object\n"
                    "            tarr := JsonStringToGap(str);\n"
                    "\n"
@@ -205,6 +209,7 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "            if Length(response) = 0 then\n"
                    "                IO_WriteLine(outfile, \"false\");\n"
                    "            else\n"
+                   "                 Print(\"GAP FOUND: \", response);\n"
                    "                IO_WriteLine(outfile, response);\n"
                    "            fi;\n"
                    "        fi;\n"

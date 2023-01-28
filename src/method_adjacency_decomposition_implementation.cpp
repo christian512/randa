@@ -104,7 +104,12 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                break;
             }
             const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices, sampling_flag);
-            job_manager.put(jobs);
+            std::vector<int> inequiv_indices_jobs = gap.equivalence(jobs, input);
+            Matrix<Integer> new_jobs;
+            for ( auto i : inequiv_indices_jobs){
+                new_jobs.insert(new_jobs.end(), jobs[i]);
+            }
+            job_manager.put(new_jobs);
          }
       });
    }
