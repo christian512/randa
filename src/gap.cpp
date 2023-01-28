@@ -9,12 +9,13 @@
 #undef COMPILE_TEMPLATE_GAP
 
 #include "symmetries.h"
+#include "algorithm_rotation.h"
 #include <sys/stat.h>
 #include <chrono>
 #include <thread>
 #include <iostream>
 #include <fstream>
-#include <pthread.h>
+#include <algorithm>
 
 using namespace panda;
 
@@ -71,10 +72,46 @@ bool panda::Gap::stop() const {
     return true;
 }
 
-std::vector<int> panda::Gap::equivalence() const {
+template <typename Integer>
+std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Vertices<Integer>& vertices) {
     // TODO: Implement
+    // string to send to GAP
+    std::string to_gap = "[";
+    // iterate through facets
+    for (const auto& facet: facets){
+        // calculate vertex on facet
+        const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
+        to_gap.append("[");
+        for (auto v : vertices_on_facet){
+            int x = get_index(v);
+            to_gap.append(std::to_string(x));
+            to_gap.append(",");
+        }
+        to_gap.pop_back();
+        to_gap.append("],");
+    }
+    to_gap.pop_back();
+    to_gap.append("]");
+
+    // temporary print out to_gap string
+    std::cout << "String to GAP: " << to_gap << std::endl;
+
+    // connect to GAP using the pipes
+    std::ifstream in(fifo_from_gap);
+    std::ofstream out(fifo_to_gap);
+    std::string line;
+
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
+    // TODO: Send string to GAP and read response
+    // write string to out
+    out << to_gap << std::endl;
+    // get incoming line
+    std::getline(in, line);
+    std::remove(line.begin(), line.end(), ' ');
+
+    std::cout << "Got line: " << line << std::endl;
+
     // temporary return
     std::vector<int> result;
     return result;

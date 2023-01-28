@@ -24,7 +24,8 @@ namespace panda
         /// stops GAP
         bool stop() const;
         /// checks for equivalence using GAP
-        std::vector<int> equivalence() const;
+        template <typename Integer>
+        std::vector<int> equivalence(const Facets<Integer>&, const Vertices<Integer>&);
     private:
         mutable std::mutex mutex;
         const char *fifo_to_gap = "togap.pipe";
@@ -32,7 +33,6 @@ namespace panda
         const char *gap_prg_file = "gap_prg.g";
         bool running = false;
         std::map<std::string, int> vertex_lookup;
-
 
     private:
         /// write gap program to file

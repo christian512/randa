@@ -18,5 +18,6 @@ namespace panda
       EXTERN template std::string Gap::vertex_to_string(const Vertex<Integer>&);
       EXTERN template bool Gap::fill_lookup_table(const Vertices<Integer>&);
       EXTERN template int Gap::get_index(const Vertex<Integer>&);
+      EXTERN template std::vector<int> Gap::equivalence(const Facets<Integer>&, const Vertices<Integer>&);
 }
 
