@@ -89,7 +89,6 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
         gap.initialize(symmetries, input);
     }
 
-
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
    for ( int i = 0; i < thread_count; ++i )
@@ -182,6 +181,7 @@ namespace
          {
             facet = algorithm::classRepresentative(facet, maps, TagType{});
          }
+         // TODO: Need another equivalence check here.
          manager.put(facets);
       }
       // Add the remaining known facets from file asynchronously.
