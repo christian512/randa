@@ -30,9 +30,6 @@ namespace
    /// Returns ridges by using recursive calls of the Adjacency Decomposition metho
    template <typename Integer>
    Inequalities<Integer> getRidgesRecursive(const Vertices<Integer>&, const Facet<Integer>&, int, int, int, bool);
-   /// Returns all vertices that lie on the facet (satisfy the inequality with equality).
-   template <typename Integer>
-   Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer>&, const Facet<Integer>&);
 }
 
 template <typename Integer, typename TagType>
@@ -58,6 +55,17 @@ Matrix<Integer> panda::algorithm::rotation(const Matrix<Integer>& matrix,
       output.insert(new_row);
    }
    return classes(output, maps, tag);
+}
+
+template <typename Integer>
+Vertices<Integer> panda::algorithm::verticesWithZeroDistance(const Vertices<Integer>& vertices, const Facet<Integer>& facet)
+{
+    Vertices<Integer> selection;
+    std::copy_if(vertices.cbegin(), vertices.cend(), std::back_inserter(selection), [&facet](const Vertex<Integer>& vertex)
+    {
+        return (algorithm::distance(facet, vertex) == 0);
+    });
+    return selection;
 }
 
 namespace
@@ -103,7 +111,7 @@ namespace
    Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices, bool sampling_flag)
    {
        // calculate vertices on facet
-       const auto vertices_on_facet = verticesWithZeroDistance(vertices, facet);
+       const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
        // break condition, when max recursion depth is reached
        if (curr_rec_depth >= max_rec_depth || vertices_on_facet.size() <= min_num_vertices)
        {
@@ -139,17 +147,6 @@ namespace
            }
        }
        return all_ridges;
-   }
-
-   template <typename Integer>
-   Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer>& vertices, const Facet<Integer>& facet)
-   {
-      Vertices<Integer> selection;
-      std::copy_if(vertices.cbegin(), vertices.cend(), std::back_inserter(selection), [&facet](const Vertex<Integer>& vertex)
-      {
-         return (algorithm::distance(facet, vertex) == 0);
-      });
-      return selection;
    }
 }
 

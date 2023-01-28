@@ -18,6 +18,7 @@ namespace panda
    {
       EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, bool);
       EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, bool);
+      EXTERN template Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer>&, const Facet<Integer>&);
    }
 }
 
