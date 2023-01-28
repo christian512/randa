@@ -21,12 +21,14 @@ using namespace panda;
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Matrix<Integer>& matrix) const
 {
-   rows.put(matrix);
+    // TODO: Add equivalence check here
+    rows.put(matrix);
 }
 
 template <typename Integer, typename TagType>
 void panda::JobManager<Integer, TagType>::put(const Row<Integer>& row) const
 {
+    // TODO: Add equivalence check here
    rows.put(row);
 }
 

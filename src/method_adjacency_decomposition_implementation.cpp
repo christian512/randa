@@ -103,6 +103,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
                break;
             }
             const auto jobs = algorithm::rotation(input, job, maps, tag, recursion_max_depth, recursion_min_num_vertices, sampling_flag);
+            // TODO: Move equivalence check
             std::vector<int> inequiv_indices_jobs = gap.equivalence(jobs, input);
             Matrix<Integer> new_jobs;
             for ( auto i : inequiv_indices_jobs){
@@ -181,7 +182,6 @@ namespace
          {
             facet = algorithm::classRepresentative(facet, maps, TagType{});
          }
-         // TODO: Need another equivalence check here.
          manager.put(facets);
       }
       // Add the remaining known facets from file asynchronously.
