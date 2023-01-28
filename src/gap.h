@@ -7,6 +7,7 @@
 #include <vector>
 #include <mutex>
 #include "matrix.h"
+#include "symmetries.h"
 #pragma once
 
 namespace panda
@@ -15,7 +16,7 @@ namespace panda
     {
     public:
         /// initializes GAP
-        bool initialize();
+        bool initialize(Symmetries);
         /// stops GAP
         bool stop() const;
         /// checks for equivalence using GAP
@@ -31,7 +32,9 @@ namespace panda
     private:
         /// write gap program to file
         // TODO: Implement symmetries to write them to the GAP file
-        bool write_gap_prg();
+        bool write_gap_prg(Symmetries);
+        /// execute GAP program
+        void execute();
 
 
     };

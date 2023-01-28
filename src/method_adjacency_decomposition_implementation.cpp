@@ -71,10 +71,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
        std::cout << "Activated the sampling method" << std::endl;
    }
 
-   // Initialize GAP
-   std::cout << "Starting GAP (take 10 seconds)" << std::endl;
-   Gap gap;
-   gap.initialize();
+
    // Read inputs
    const auto& input = std::get<0>(data);
    const auto& names = std::get<1>(data);
@@ -84,6 +81,14 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    const auto reduced_data = reduce(job_manager, data);
    const auto& equations = std::get<0>(reduced_data);
    const auto& maps = std::get<1>(reduced_data);
+
+    // Initialize GAP
+    Gap gap;
+    if (symmetries.size() > 0){
+        std::cout << "Starting GAP (take 10 seconds)" << std::endl;
+        gap.initialize(symmetries);
+    }
+
 
    std::list<JoiningThread> threads;
    auto future = initializePool(job_manager, input, maps, known_output, equations);
