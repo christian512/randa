@@ -37,7 +37,16 @@ template <typename Integer>
 bool panda::Gap::initialize(Symmetries symmetries, const Vertices<Integer>& vertices){
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
-    // creating pipes
+    // Remove fifo files
+    std::string cmd = "rm ";
+    cmd.append(fifo_from_gap);
+    const char * c = cmd.c_str();
+    std::system(c);
+    cmd = "rm ";
+    cmd.append(fifo_to_gap);
+    c = cmd.c_str();
+    std::system(c);
+    // creating pipe
     mkfifo(fifo_to_gap, 0666);
     mkfifo(fifo_from_gap, 0666);
     //  Write GAP program with symmetries
