@@ -121,7 +121,7 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
 
     // get incoming line
     std::getline(in, line);
-    std::cout << "Got from GAP: " << line << std::endl;
+    // std::cout << "Got from GAP: " << line << std::endl;
     // process line
     std::remove(line.begin(), line.end(), ' ');
 
@@ -213,7 +213,7 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "while str <> \"break\" do\n"
                    "        # read command from input\n"
                    "        if str <> \"\" then\n"
-                   "            Print(\"GAP READ: \", str);\n"
+                   "            # Print(\"GAP READ: \", str);\n"
                    "            # Convert to GAP Object\n"
                    "            tarr := JsonStringToGap(str);\n"
                    "\n"

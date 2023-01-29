@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "algorithm_classes.h"
 #include "algorithm_fourier_motzkin_elimination.h"
@@ -110,7 +111,6 @@ namespace
    template <typename Integer>
    Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices, bool sampling_flag)
    {
-       // std::cout << "Current recursion level: " << curr_rec_depth << std::endl;
        // calculate vertices on facet
        const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
        // break condition, when max recursion depth is reached
@@ -119,19 +119,33 @@ namespace
            // return standard method to calculate ridges
            return algorithm::fourierMotzkinElimination(vertices_on_facet);
        }
-
        // Obtain some ridges using the heuristic FME method
-       auto unconsidered_ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
-       // list of all found ridges
+       Facets<Integer> tmp_ridges = algorithm::fourierMotzkinEliminationHeuristic(vertices_on_facet);
+       // List of all ridges
        Facets<Integer> all_ridges;
+       // put all temporarily found ridges into all ridges
+       for (auto& u: tmp_ridges){
+           all_ridges.push_back(u);
+       }
+       // List of unconsidered ridges
+       Facets<Integer> unconsidered_ridges;
+       // TODO: We could basically always choose just the first one, because the non-sampling method would find all ridges anyway.
+       if (sampling_flag){
+           // If sampling just consider one (TODO: This could be dialed, but using all takes too long)
+           unconsidered_ridges.push_back(tmp_ridges.front());
+       } else {
+           // if sampling flag is not activated we have to consider all at some point, so we add here already.
+           for (auto& tr: tmp_ridges){
+               unconsidered_ridges.push_back(tr);
+           }
+       }
+
        // iterate through all
        while ( unconsidered_ridges.size() > 0)
        {
            // get ridges from the unconsidered ridges list
            auto ridge = *unconsidered_ridges.begin();
            unconsidered_ridges.erase(unconsidered_ridges.begin());
-           // add ridge
-           all_ridges.push_back(ridge);
            // get subridges (I mean facets of the current ridge by that) with increased recursion level.
            Facets<Integer> subridges = getRidgesRecursive(vertices_on_facet, ridge, curr_rec_depth + 1, max_rec_depth, min_num_vertices, sampling_flag);
            // calculate furthest vertex
