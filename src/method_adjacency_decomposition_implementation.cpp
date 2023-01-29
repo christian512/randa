@@ -117,7 +117,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    }
    future.wait();
    // stop GAP
-   gap.stop();
+   // gap.stop();
 }
 
 namespace

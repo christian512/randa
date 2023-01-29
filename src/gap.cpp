@@ -82,38 +82,43 @@ bool panda::Gap::stop() const {
 
 template <typename Integer>
 std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Vertices<Integer>& vertices) {
-    // string to send to GAP
-    std::string to_gap = "[";
-    // iterate through facets
-    for (const auto& facet: facets){
-        // calculate vertex on facet
-        const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
-        to_gap.append("[");
-        for (auto v : vertices_on_facet){
-            int x = get_index(v);
-            to_gap.append(std::to_string(x));
-            to_gap.append(",");
-        }
-        to_gap.pop_back();
-        to_gap.append("],");
-    }
-    to_gap.pop_back();
-    to_gap.append("]");
-
-    std::cout << "Writing to GAP: " << to_gap << std::endl;
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
-
-
     // connect to GAP using the pipes
     std::ifstream in(fifo_from_gap);
     std::ofstream out(fifo_to_gap);
     std::string line;
-
-
-    // write string to out
-    out << to_gap << std::endl;
+    // string to send to GAP
+    out << "[";
+    // iterate through facets
+    bool set_comma = false;
+    for (const auto& facet: facets){
+        // calculate vertex on facet
+        if (set_comma){
+            out << ",";
+        }
+        const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
+        out << "[";
+        for (int k = 0; k < vertices_on_facet.size() - 1; k++){
+            int x = get_index(vertices_on_facet[k]);
+            out << std::to_string(x);
+            out << ",";
+        }
+        int x = get_index(vertices_on_facet[vertices_on_facet.size()-1]);
+        out << std::to_string(x);
+        out << "]";
+        set_comma = true;
+    }
+    out << "]";
+    out << "\n";
     std::flush(out);
+
+
+
+    // TODO: Other way to write to FIFO
+    // https://www.geeksforgeeks.org/named-pipe-fifo-example-c-program/
+
+
     // get incoming line
     std::getline(in, line);
     std::cout << "Got from GAP: " << line << std::endl;
@@ -197,10 +202,13 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
 
     // Write the actual logic of the GAP file
     gap_prg.append("# List of all facets\n"
-                   "# Print(\"STARTED GAP\")\n;"
+                   "# Print(\"STARTED GAP\");\n"
                    "karr := [];\n"
                    "\n"
                    "\n"
+                   "while not(IO_HasData(infile)) do \n"
+                   "    x:=1; \n"
+                   "od;\n"
                    "str := IO_ReadLine(infile);\n"
                    "while str <> \"break\" do\n"
                    "        # read command from input\n"
@@ -236,6 +244,9 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
                    "                IO_WriteLine(outfile, response);\n"
                    "            fi;\n"
                    "        fi;\n"
+                   "        while not(IO_HasData(infile)) do \n"
+                   "            x:=1; \n"
+                   "        od;\n"
                    "        str := IO_ReadLine(infile); \n"
                    "od;");
 

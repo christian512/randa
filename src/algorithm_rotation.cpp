@@ -110,6 +110,7 @@ namespace
    template <typename Integer>
    Inequalities<Integer> getRidgesRecursive(const Vertices<Integer> &vertices, const Facet<Integer> &facet, int curr_rec_depth, int max_rec_depth, int min_num_vertices, bool sampling_flag)
    {
+       // std::cout << "Current recursion level: " << curr_rec_depth << std::endl;
        // calculate vertices on facet
        const auto vertices_on_facet = algorithm::verticesWithZeroDistance(vertices, facet);
        // break condition, when max recursion depth is reached
@@ -139,11 +140,16 @@ namespace
            for (const auto& sr: subridges)
            {
                const auto new_ridge = rotate(vertices_on_facet, furthest_vertex, ridge, sr);
-               // Check if ridge is already in all_ridges and add to unconsidered if we are not sampling
-               if (!sampling_flag && std::find(all_ridges.begin(), all_ridges.end(), new_ridge) == all_ridges.end())
-               {
-                    unconsidered_ridges.push_back(new_ridge);
+               // if ridge is not in all ridges
+               if (std::find(all_ridges.begin(), all_ridges.end(), new_ridge) == all_ridges.end()){
+                   all_ridges.push_back(new_ridge);
+                   // add to unconsidered only if we are not in sampling
+                   if (!sampling_flag)
+                   {
+                       unconsidered_ridges.push_back(new_ridge);
+                   }
                }
+
            }
        }
        return all_ridges;
