@@ -27,34 +27,35 @@ panda::Gap::Gap(){
 void panda::Gap::execute(){
     // executes the GAP command
     // starting a gap process
-    std::string cmd = "gap.sh -q ";
-    cmd.append(gap_prg_file);
-    cmd.append(" &");
-    const char *c = cmd.c_str();
-    std::system(c);
+    // std::string cmd = "gap.sh -q ";
+    // cmd.append(gap_prg_file);
+    // cmd.append(" &");
+    // const char *c = cmd.c_str();
+    // std::system(c);
 }
 template <typename Integer>
 bool panda::Gap::initialize(Symmetries symmetries, const Vertices<Integer>& vertices){
     // lock the gap mutex
     std::lock_guard<std::mutex> lock(mutex);
     // Remove fifo files
-    std::string cmd = "rm ";
-    cmd.append(fifo_from_gap);
-    const char * c = cmd.c_str();
-    std::system(c);
-    cmd = "rm ";
-    cmd.append(fifo_to_gap);
-    c = cmd.c_str();
-    std::system(c);
+    // std::string cmd = "rm ";
+    // cmd.append(fifo_from_gap);
+    // const char * c = cmd.c_str();
+    // std::system(c);
+    // cmd = "rm ";
+    // cmd.append(fifo_to_gap);
+    // c = cmd.c_str();
+    // std::system(c);
     // creating pipe
-    mkfifo(fifo_to_gap, 0666);
-    mkfifo(fifo_from_gap, 0666);
+    // mkfifo(fifo_to_gap, 0666);
+    // mkfifo(fifo_from_gap, 0666);
     //  Write GAP program with symmetries
     Gap::write_gap_prg(symmetries);
     // Execute GAP and wait for startup
-    execute();
-    std::chrono::seconds dura(10);
-    std::this_thread::sleep_for(dura);
+    // Currently this is done by the external python script so
+    // execute();
+    // std::chrono::seconds dura(10);
+    // std::this_thread::sleep_for(dura);
 
     // Generate the lookup table for the vertex
     fill_lookup_table(vertices);
@@ -68,24 +69,25 @@ bool panda::Gap::stop() const {
     if (!running){
         return true;
     }
-    std::cout << "Shutting down GAP" << std::endl;
-    std::chrono::seconds dura(2);
-    std::this_thread::sleep_for(dura);
+    // Currently the stoppping of GAP is done by the Python script
+    // std::cout << "Shutting down GAP" << std::endl;
+    //std::chrono::seconds dura(2);
+    // std::this_thread::sleep_for(dura);
     // lock the gap mutex
-    std::lock_guard<std::mutex> lock(mutex);
+    // std::lock_guard<std::mutex> lock(mutex);
     // Kill the gap command
-    std::string cmd = "pkill -15 gap";
-    const char * c = cmd.c_str();
-    std::system(c);
+    // std::string cmd = "pkill -15 gap";
+    // const char * c = cmd.c_str();
+    // std::system(c);
     // Remove FIFO files.
-    cmd = "rm ";
-    cmd.append(fifo_from_gap);
-    c = cmd.c_str();
-    std::system(c);
-    cmd = "rm ";
-    cmd.append(fifo_to_gap);
-    c = cmd.c_str();
-    std::system(c);
+    // std::string cmd = "rm ";
+    //cmd.append(fifo_from_gap);
+    //const char * c = cmd.c_str();
+    //std::system(c);
+    //cmd = "rm ";
+    // cmd.append(fifo_to_gap);
+    // c = cmd.c_str();
+    // std::system(c);
     return true;
 }
 
@@ -130,7 +132,7 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
 
     // get incoming line
     std::getline(in, line);
-    // std::cout << "Got from GAP: " << line << std::endl;
+    std::cerr << "Got from GAP: " << line << std::endl;
     // process line
     std::remove(line.begin(), line.end(), ' ');
 

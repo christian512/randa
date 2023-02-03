@@ -58,17 +58,17 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
    // Obtain the maximum number of recursions that are allowed
    const auto recursion_max_depth = recursion::maxNumRecursions(argc, argv);
    if (recursion_max_depth > 0){
-       std::cout << "Maximum allowed recursive calls: " << recursion_max_depth << std::endl;
+       std::cerr << "Maximum allowed recursive calls: " << recursion_max_depth << std::endl;
    }
    // Obtain the minimal number of vertices that are required to allow a recursive call
    const auto recursion_min_num_vertices = recursion::minNumVertices(argc, argv);
    if ( recursion_min_num_vertices > 0){
-       std::cout << "Minimum required number of vertices for recursive call: " << recursion_min_num_vertices << std::endl;
+       std::cerr << "Minimum required number of vertices for recursive call: " << recursion_min_num_vertices << std::endl;
    }
    // Check if the sampling flag is set
    const auto sampling_flag = sampling::samplingFlag(argc, argv);
    if ( sampling_flag) {
-       std::cout << "Activated the sampling method" << std::endl;
+       std::cerr << "Activated the sampling method" << std::endl;
    }
    // Read inputs
    const auto& input = std::get<0>(data);
@@ -83,7 +83,7 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
     // Initialize GAP
     panda::Gap gap;
     if (symmetries.size() > 0){
-        std::cout << "Starting GAP (take 10 seconds)" << std::endl;
+        std::cerr << "Starting GAP (take 10 seconds)" << std::endl;
         gap.initialize(symmetries, input);
     }
 
@@ -116,8 +116,6 @@ void panda::implementation::adjacencyDecomposition(int argc, char** argv, const 
       });
    }
    future.wait();
-   // stop GAP
-   // gap.stop();
 }
 
 namespace
