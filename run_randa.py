@@ -8,17 +8,31 @@ import argparse
 import subprocess
 import os
 import signal
+import time
 
 # Hardcoded name of the gap program that is generated within RANDA
-gap_file = './gap_prg.g'
-# TODO: Remove GAP file in case it already exists
+cwd = os.getcwd()
+gap_file = cwd + '/gap_prg.g'
+togap_pipe = cwd + '/togap.pipe'
+fromgap_pipe = cwd + '/fromgap.pipe'
 
+# Remove GAP file in case it already exists
+if os.path.exists(gap_file):
+    os.remove(gap_file)
 
+if os.path.exists(togap_pipe):
+    os.remove(togap_pipe)
+if os.path.exists(fromgap_pipe):
+    os.remove(fromgap_pipe)
+
+os.mkfifo(togap_pipe)
+os.mkfifo(fromgap_pipe)
 
 # set inputs that are equivalent to inputs of RANDA
 parser = argparse.ArgumentParser()
 parser.add_argument(dest='input_file', help='Input file for Randa containing vertices/inequalities')
 parser.add_argument('-t', type=int, help="Number of threads to use")
+parser.add_argument('-r', type=int, help="Number of recursive calls")
 
 args = parser.parse_args()
 # temporarily print arguments
@@ -41,36 +55,38 @@ for arg, val in args.items():
     cmd += ' -{} {}'.format(arg, val)
 
 # Execute RANDA
+print(cmd)
 randa_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 print('Started RANDA')
+time.sleep(3)
 
-
-# TODO: Wait for GAP file to be written
-while False:
-    print('Waiting')
+# Wait for GAP file to be created
+while not os.path.exists(gap_file):
+    print('Waiting for GAP file')
+    time.sleep(0.5)
 
 # Start GAP
-cmd = "gap --quitonbreak {}".format(gap_file)
+cmd = "gap.sh --quitonbreak {}".format(gap_file)
 gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-time.sleep(5)
-print('Started GAP program.')
 
 
 # define behavior for receiving a SIGINT (e.g. pressing ctrl+c)
-def handler(signum, frame):
-    print("\n Ctrl-c was pressed. Stopping GAP and RANDA.")
-    os.killpg(os.getpgid(randa_process.pid), signal.SIGTERM)
-    os.killpg(os.getpid(gap_process.pid), signal.SIGTERM)
+def stop_handler(signum, frame):
+    print("\n  Stopping GAP and RANDA.")
+    os.killpg(randa_process.pid, signal.SIGTERM)
+    os.killpg(gap_process.pid, signal.SIGTERM)
+    os.remove(fromgap_pipe)
+    os.remove(togap_pipe)
     exit(1)
 
-
 # add handler for sigint
-signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGINT, stop_handler)
 
-
-# Wait for processes
+# Wait for RANDA process to finish
 randa_process.wait()
-gap_process.wait()
+# kill GAP process
+gap_process.kill()
 
-# TODO: to remove file
-
+# remove FIFO files
+os.remove(fromgap_pipe)
+os.remove(togap_pipe)
