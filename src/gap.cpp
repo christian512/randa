@@ -132,7 +132,8 @@ std::vector<int> panda::Gap::equivalence(const Facets<Integer>& facets, const Ve
 
     // get incoming line
     std::getline(in, line);
-    std::cerr << "Got from GAP: " << line << std::endl;
+    // activate this to debug the lines obtained from GAP
+    // std::cerr << "Got from GAP: " << line << std::endl;
     // process line
     std::remove(line.begin(), line.end(), ' ');
 
