@@ -49,7 +49,7 @@ int panda::recursion::maxNumRecursions(int argc, char** argv)
         }
     }
     // return default value
-    return 999;
+    return 0;
 }
 
 int panda::recursion::minNumVertices(int argc, char** argv)
