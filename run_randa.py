@@ -69,7 +69,6 @@ if sampling_flag:
 cmd += ' > ' + output_file
 # Execute RANDA
 randa_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-print('Started RANDA')
 time.sleep(3)
 
 # Wait for GAP file to be created
@@ -89,6 +88,7 @@ def stop_handler(signum, frame):
     gap_process.kill()
     os.remove(fromgap_pipe)
     os.remove(togap_pipe)
+    os.remove(gap_file)
     exit(1)
 
 # add handler for sigint
@@ -99,6 +99,7 @@ randa_process.wait()
 # kill GAP process
 gap_process.kill()
 
-# remove FIFO files
+# remove FIFO files and GAP program
 os.remove(fromgap_pipe)
 os.remove(togap_pipe)
+os.remove(gap_file)
