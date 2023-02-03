@@ -32,30 +32,42 @@ os.mkfifo(fromgap_pipe)
 parser = argparse.ArgumentParser()
 parser.add_argument(dest='input_file', help='Input file for Randa containing vertices/inequalities')
 parser.add_argument('-t', type=int, help="Number of threads to use")
-parser.add_argument('-r', type=int, help="Number of recursive calls")
+parser.add_argument('-r', type=int, help="Number of maximum recursive calls")
+parser.add_argument('-d', type=int, help="Minimum number of vertices required for recursive calls")
+parser.add_argument('-o', type=str, help='Path to output file', default='randa.out')
+parser.add_argument('--probabilistic', action='store_true')
 
 args = parser.parse_args()
 # temporarily print arguments
 args = args.__dict__
 
-# Extract input file
+
+# Extract input/output file
 input_file = args['input_file']
 args.pop('input_file')
+output_file = args['o']
+args.pop('o')
+
+# Extract probabilistic flag
+sampling_flag = args['probabilistic']
+args.pop('probabilistic')
 
 # Define command for Randa
-# TODO: Change this if you "make install" randa
-cmd = './randa {}'.format(input_file)
+# TODO: Identify where RANDA is installed
+cmd = 'randa {}'.format(input_file)
 
 # Add arguments to the randa command
 for arg, val in args.items():
     # Continue if Argument is empty
     if not val:
         continue
-
     cmd += ' -{} {}'.format(arg, val)
 
+if sampling_flag:
+    cmd += ' --probabilistic'
+# Add output file
+cmd += ' > ' + output_file
 # Execute RANDA
-print(cmd)
 randa_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 print('Started RANDA')
 time.sleep(3)
@@ -73,8 +85,8 @@ gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 # define behavior for receiving a SIGINT (e.g. pressing ctrl+c)
 def stop_handler(signum, frame):
     print("\n  Stopping GAP and RANDA.")
-    os.killpg(randa_process.pid, signal.SIGTERM)
-    os.killpg(gap_process.pid, signal.SIGTERM)
+    randa_process.kill()
+    gap_process.kill()
     os.remove(fromgap_pipe)
     os.remove(togap_pipe)
     exit(1)
