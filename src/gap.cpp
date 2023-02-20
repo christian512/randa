@@ -204,6 +204,8 @@ bool panda::Gap::write_gap_prg(Symmetries symmetries) {
     gap_prg.pop_back();
     // add closure for group
     gap_prg.append(");\n");
+    // Reduce size by only considering generators
+    gap_prg.append("GRP = Group(SmallGeneratingSet(GRP));\n");
 
     // Add files to GAP
     gap_prg.append("# setup files\noutfile := IO_File(\"");
