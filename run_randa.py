@@ -77,6 +77,7 @@ while not os.path.exists(gap_file):
     time.sleep(0.5)
 
 # Start GAP
+# TODO: Identify where GAP is installed
 cmd = "gap.sh --quitonbreak {}".format(gap_file)
 gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 
