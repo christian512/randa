@@ -14,119 +14,58 @@ The extension adds the following features to the original functionality:
 PANDA was written by Stefan Lörwald, Universität Heidelberg, and released under the CC BY-NC 4.0 license.
 Accordingly, RANDA is released under CC BY-NC 4.0: http://creativecommons.org/licenses/by-nc/4.0/legalcode
 
-## Important Note
-RANDA makes use of the computer algebra system GAP, which is used for computational group theory operations. 
-A running instance of a specific script in GAP, which compares and stores facets, is needed in order to execute RANDA properly.
-If no such script is running in GAP, the enumeration using RANDA will not progress. Furthermore (as the name suggests),
-the changes applied here to PANDA remove the parallel functionality. Thus RANDA can only run on a single-core.
+RANDA makes use of the computer algebra system GAP, which is used for computational group theory operations. You need to have gap installed on your system. 
 
+However, I strongly encourage you to use the provided **Docker image** to run the software. This will take care of all dependencies required for *RANDA*.
 
-## Installation
-It is recommended to install RANDA using [CMake](www.cmake.org). On Ubuntu, you can install CMake using the command:
-```shell
-sudo apt-get install build-essential cmake
+## Docker setup
+
+In the repository we provide a `run_dev_image.sh` file, which will automatically pull the latest version of the Docker image for RANDA and start a container of it. Download the script to your computer, make it executable and run it.
+
+Connect to the shell of the running docker container using
+
+```docker exec -it randa_dev bash```
+
+Change the directory into the *user data* folder:
+
+```cd user_data_randa```
+
+We will clone this repository here by running: 
+
+```git clone https://github.com/christian512/randa.git```
+
+Now, we change into the *randa*  directory and build the software: 
+
 ```
-If you are on another platform take a look at the [CMake website](www.cmake.org) to find installation instructions.
-
-
-After the CMake installation proceed with the following steps:
-1. create a *build*-folder in the randa directory
-2. change directory into the *build*-folder
-3. call *cmake ..* and then *make*
-4. optionally run tests that the installation was successful using *ctest*
-5. *make install* to make randa accessible from any directory
-
-This is the complete list of commands to run in Ubuntu for the above actions:
-
-```shell
-mkdir build
+cd randa
+mkdir build 
 cd build
 cmake ..
-make
-ctest
-sudo make install
+make 
+make install
 ```
 
-### Install GAP
-A detailed instruction on installing GAP can be found [here](https://github.com/gap-system/gap/blob/v4.11.1/INSTALL.md).
+This will make the `randa` command available globally.
 
-GAP requires external library [GMP](www.libgmp.org), which needs to be installed beforehand.
-On Ubuntu you can install it using the following command. 
-```shell
-sudo apt-get install libgmp-dev
-```
+## Executing RANDA
+To make the execution of `randa` relatively simple I provide a Python script `run_randa.py` in this directory. 
 
-Next download GAP from their Download webpage and follow these steps to install GAP:
+You can pass multiple arguments to the script, which are described below. To see a full list of arguments run: 
 
-1. unpack the GAP archive and change into the new directory
-2. configure the installation using *./configure*
-3. make the installation
+`python3 run_randa.py --help`
 
-On Ubuntu you can do this by the following commands:
-```shell
-tar -xf gap-4.11.1.tar.gz cd gap-4.11.1
-./configure
-make
-```
-GAP can now be executed by running *./bin/gap.sh*.
+To verify your installation you can run `randa` on the provided example file by executing:
 
-For executing the scripts to communicate with RANDA, you have to install the packages for GAP.
-```shell
-cd gap-4.11.1/pkg
-../bin/BuildPackages.sh
-```
+`python3 run_randa.py example/example.ext`
 
-In order to call GAP from any location, you have to add it to the *PATH* variable. 
-Edit your *bashrc*-file using *nano*: 
-```shell
-nano ~/.bashrc
-```
-Add the following lines to the end of the file.
-```shell
-PATH=~/gap-4.11.1/bin:$PATH
-alias gap="gap.sh"
-```
-To finish the setup, source the *.bashrc* file.
+This should create a `randa.out` file which contains to facets describing the facet classes of the cut polytope `K_{1,2,2}`.
 
-```shell
-source ~/.bashrc
-```
-Now you should be able to call *gap* from any directory.
+## Options
+TODO: Describe
 
-## Example
-In the `/example/` directory I provide example input files for running RANDA and GAP. To run this
-examples change the directory:
+## Defining Input files 
 
-```bash
-cd example
-```
-
-For the communication between RANDA and GAP you need to create a communication pipe between
-the two programs. This is done by the `mkfifo` command:
-
-```bash
-mkfifo fromgap.pipe
-mkfifo togap.pipe
-```
-
-You can start the **GAP** program by running the following in one Terminal:
-
-```bash
-gap --quitonbreak example_stabilizer_program.g 
-```
-Now you can start RANDA which communicates to GAP and enumerates
-all facet-classes of the polytope given by the vertices in `example_vertices.ext`.
-Note that you have to execute this in a second Terminal as the *GAP* program need to be running while RANDA is executed:
-
-```bash
-randa example_vertices.ext
-```
-
-You can give any options to RANDA such as:
--r : Recursion level to use (integer)
--p : Flag for enabling the sampling method (1 for activating sampling method, 0 for not)
-
-## Enumerate different Polyhedra
+TODO: Rewrite this section
 
 To enumerate any other polyhedron, you have to give a description of its vertices/rays and its combinatorial symmetry group.
 
