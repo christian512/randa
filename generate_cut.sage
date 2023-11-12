@@ -1,6 +1,10 @@
-# TODO: Read inputs from arguments
-# TODO: Polish this file.
-graph = graphs.CompleteMultipartiteGraph([1,3,5])
+# Run this file by executing "sage generate_cut.sage"
+
+# Setup your graph and output filename
+graph = graphs.CompleteMultipartiteGraph([1,4,4])
+output_filename = 'cut.ext'
+
+
 vertices = graph.vertices()
 gens = graph.automorphism_group().gens()
 print("Number of Graph Vertices: ", len(vertices))
@@ -20,7 +24,7 @@ assert len(subsets_list) == 2**(len(vertices)-1)
 
 
 # Open a file to write the output to
-f = open('cut.ext', 'w+')
+f = open(output_filename, 'w+')
 
 
 # Generate polytope vertices

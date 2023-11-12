@@ -94,9 +94,10 @@ def stop_handler(signum, frame):
 signal.signal(signal.SIGINT, stop_handler)
 
 # Wait for RANDA process to finish
-randa_process.wait()
 # kill GAP process
 gap_process.kill()
+randa_process.wait()
+
 
 # remove FIFO files and GAP program
 os.remove(fromgap_pipe)
