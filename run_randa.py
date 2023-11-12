@@ -35,7 +35,7 @@ parser.add_argument('-t', type=int, help="Number of threads to use")
 parser.add_argument('-r', type=int, help="Number of maximum recursive calls")
 parser.add_argument('-d', type=int, help="Minimum number of vertices required for recursive calls")
 parser.add_argument('-o', type=str, help='Path to output file', default='randa.out')
-parser.add_argument('--probabilistic', action='store_true')
+parser.add_argument('--sampling', action='store_true')
 
 args = parser.parse_args()
 # temporarily print arguments
@@ -49,11 +49,10 @@ output_file = args['o']
 args.pop('o')
 
 # Extract probabilistic flag
-sampling_flag = args['probabilistic']
-args.pop('probabilistic')
+sampling_flag = args['sampling']
+args.pop('sampling')
 
 # Define command for Randa
-# TODO: Identify where RANDA is installed
 cmd = 'randa {}'.format(input_file)
 
 # Add arguments to the randa command
@@ -77,7 +76,6 @@ while not os.path.exists(gap_file):
     time.sleep(0.5)
 
 # Start GAP
-# TODO: Identify where GAP is installed
 cmd = "gap.sh --quitonbreak {}".format(gap_file)
 gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 
