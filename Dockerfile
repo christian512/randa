@@ -8,8 +8,6 @@ RUN apt-get update
 # Setup dependencies 
 RUN apt-get install build-essential cmake -y
 
-# Install should be done in the development environment
-
 ###########
 ### GAP ###
 ###########
@@ -53,7 +51,6 @@ RUN apt install software-properties-common -y \
 ### ENV ####
 ############
 # Setup further things for the development environment
-
 WORKDIR /root
 RUN mkdir /root/user_data_randa/ \
     && ln -s /root/user_data_randa/.vscode-server /root/ \
