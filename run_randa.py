@@ -67,7 +67,7 @@ if sampling_flag:
 # Add output file
 cmd += ' > ' + output_file
 # Execute RANDA
-randa_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+randa_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
 time.sleep(3)
 
 # Wait for GAP file to be created
@@ -77,14 +77,14 @@ while not os.path.exists(gap_file):
 
 # Start GAP
 cmd = "gap.sh --quitonbreak {}".format(gap_file)
-gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
 
 
 # define behavior for receiving a SIGINT (e.g. pressing ctrl+c)
 def stop_handler(signum, frame):
     print("\n  Stopping GAP and RANDA.")
-    randa_process.kill()
-    gap_process.kill()
+    os.killpg(os.getpgid(randa_process.pid), signal.SIGTERM)
+    os.killpg(os.getpgid(gap_process.pid), signal.SIGTERM)
     os.remove(fromgap_pipe)
     os.remove(togap_pipe)
     os.remove(gap_file)
@@ -93,11 +93,9 @@ def stop_handler(signum, frame):
 # add handler for sigint
 signal.signal(signal.SIGINT, stop_handler)
 
-# Wait for RANDA process to finish
-# kill GAP process
-gap_process.kill()
+# Wait for RANDA process to finish and kill gap process
 randa_process.wait()
-
+os.killpg(os.getpgid(gap_process.pid), signal.SIGTERM)
 
 # remove FIFO files and GAP program
 os.remove(fromgap_pipe)
