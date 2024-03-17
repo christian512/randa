@@ -16,14 +16,9 @@ namespace panda
 {
    namespace algorithm
    {
-      EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet);
-      EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex);
-      EXTERN template Matrix<Integer> rotation_recursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, int);
-      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, const Matrix<Integer>&, int);
-      EXTERN template Matrix<Integer> getRidgesRecursiveProbabilistic(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, const Matrix<Integer>&, int);
-      EXTERN template Matrix<Integer> rotation_recursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, int);
-      EXTERN template Matrix<Integer> getRidgesRecursive(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, const Matrix<Integer>&, int);
-      EXTERN template Matrix<Integer> getRidgesRecursiveProbabilistic(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, const Matrix<Integer>&, int);
+      EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::facet, int, int, bool);
+      EXTERN template Matrix<Integer> rotation(const Matrix<Integer>&, const Row<Integer>&, const Maps&, tag::vertex, int, int, bool);
+      EXTERN template Vertices<Integer> verticesWithZeroDistance(const Vertices<Integer>&, const Facet<Integer>&);
    }
 }
 

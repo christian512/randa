@@ -42,9 +42,9 @@ bool panda::input::implementation::isKeyword(const std::string& string) noexcept
            isKeywordInequalities(string) ||
            isKeywordReducedInequalities(string) ||
            isKeywordMaps(string) ||
-           isKeywordVertexMaps(string) ||
            isKeywordNames(string) ||
-           isKeywordEnd(string) );
+           isKeywordEnd(string) ||
+           isKeywordSymmetries(string) );
 }
 
 bool panda::input::implementation::isKeywordEnd(const std::string& string) noexcept
@@ -166,18 +166,6 @@ bool panda::input::implementation::isKeywordMaps(const std::string& string) noex
            string == "Maps:");
 }
 
-bool panda::input::implementation::isKeywordVertexMaps(const std::string& string) noexcept
-{
-   return (string == "VERTEXMAPS" ||
-           string == "VERTEXMAPS:" ||
-           string == "VERTEXMAP_SECTION" ||
-           string == "VERTEXMAP_SECTION:" ||
-           string == "VERTEXMAPS_SECTION" ||
-           string == "VERTEXMAPS_SECTION:" ||
-           string == "VertexMaps" ||
-           string == "VertexMaps:");
-}
-
 bool panda::input::implementation::isKeywordNames(const std::string& string) noexcept
 {
    return (string == "INDEX" ||
@@ -198,5 +186,17 @@ bool panda::input::implementation::isKeywordNames(const std::string& string) noe
            string == "Indices:" ||
            string == "Names" ||
            string == "Names:");
+}
+
+bool panda::input::implementation::isKeywordSymmetries(const std::string& string) noexcept
+{
+    return (string == "SYMMETRY" ||
+            string == "SYMMETRY:" ||
+            string == "SYMMETRIES" ||
+            string == "SYMMETRIES:" ||
+            string == "Symmetries" ||
+            string == "Symmetries:" ||
+            string == "Symmetry" ||
+            string == "Symmetry:");
 }
 

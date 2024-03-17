@@ -8,13 +8,10 @@
 
 namespace panda
 {
-   namespace recursion
+   namespace sampling
    {
-      /// Returns the maximum number of recursions to be made
-      int maxNumRecursions(int, char**);
-      /// Returns the minimum number of vertices to allow a recursive call
-      int minNumVertices(int, char**);
-
+       /// Returns if the sampling method is activated
+       bool samplingFlag(int, char**);
    }
 }
 

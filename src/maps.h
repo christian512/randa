@@ -24,9 +24,5 @@ namespace panda
    using Map = std::vector<Image>;
    /// Type alias for maps.
    using Maps = std::vector<Map>;
-   /// Type alias for VertexMap.
-   using VertexMap = std::vector<int>;
-   /// Type alias for VertexMaps.
-   using VertexMaps = std::vector<VertexMap>;
 }
 

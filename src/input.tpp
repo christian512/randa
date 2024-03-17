@@ -7,24 +7,22 @@
 #include "cast.h"
 
 template <typename Integer>
-std::tuple<panda::Vertices<Integer>, panda::Names, panda::Maps, panda::Inequalities<Integer>, panda::VertexMaps> panda::input::vertices(int argc, char** argv)
+std::tuple<panda::Vertices<Integer>, panda::Names, panda::Maps, panda::Inequalities<Integer>, panda::Symmetries> panda::input::vertices(int argc, char** argv)
 {
    const auto data = vertices<int>(argc, argv);
    return std::make_tuple(cast<Integer>(std::get<0>(data)),  // vertices
                           std::get<1>(data),                 // names
                           std::get<2>(data),                 // maps
                           cast<Integer>(std::get<3>(data)),  // inequalities
-                          std::get<4>(data));                // vertexmaps
+                          std::get<4>(data));                // symmetries
 }
 
 template <typename Integer>
-std::tuple<panda::Inequalities<Integer>, panda::Names, panda::Maps, panda::Vertices<Integer>, panda::VertexMaps> panda::input::inequalities(int argc, char** argv)
-{
-   const auto data = inequalities<int>(argc, argv);
-   return std::make_tuple(cast<Integer>(std::get<0>(data)),  // inequalities
-                          std::get<1>(data),                 // names
-                          std::get<2>(data),                 // maps
-                          cast<Integer>(std::get<3>(data)),  // vertices
-                         std::get<4>(data));                 // vertexmaps
+std::tuple<panda::Inequalities<Integer>, panda::Names, panda::Maps, panda::Vertices<Integer>, panda::Symmetries> panda::input::inequalities(int argc, char** argv) {
+    const auto data = inequalities < int > (argc, argv);
+    return std::make_tuple(cast<Integer>(std::get<0>(data)),  // inequalities
+                           std::get<1>(data),                 // names
+                           std::get<2>(data),                 // maps
+                           cast<Integer>(std::get<3>(data)),  // vertices
+                           std::get<4>(data));                // symmetries
 }
-

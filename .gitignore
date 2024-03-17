@@ -1,2 +1,7 @@
 build
 .idea
+
+*.g
+*.out
+*.sage.py
+*.pipe
