@@ -56,7 +56,7 @@ You can pass multiple arguments to the script, which are described below. To see
 
 To verify your installation you can run `randa` on the provided example file by executing:
 
-`python3 run_randa.py example/example.ext`
+`python3 run_randa.py example.ext`
 
 This should create a `randa.out` file which contains to facets describing the facet classes of the cut polytope `K_{1,2,2}`.
 
@@ -65,17 +65,11 @@ TODO: Describe
 
 ## Defining Input files 
 
-TODO: Rewrite this section
-
 To enumerate any other polyhedron, you have to give a description of its vertices/rays and its combinatorial symmetry group.
 
-The vertices need to be provided in a format as shown in `example/example_vertices.ext`. This format is also described [here](http://comopt.ifi.uni-heidelberg.de/software/PANDA/format.html).
-The symmetry group, for the particular polyhedron, needs to be given in the *GAP* program. You can use the `example_stabilizer_program.g` as a template. Note that for recursive calls, this program
-calculates the stabilizer as symmetry group for intermediate polyhedra. The symmetry group is defined in line 4 of the file: 
+The vertices need to be provided in a format as shown in `example.ext`. This format is also described [here](http://comopt.ifi.uni-heidelberg.de/software/PANDA/format.html).
 
-```
-GRP_RED := ();
-```
-You have to give the symmetry group in disjoint cycles for the indices of the vertices (as given in the vertices file). For example, if the exchange of the first vertex with the second vertex is a valid symmetry of
-the polyhedron, this is denoted by `(1,2)`. It is best to provide here only a minimal generating set of the symmetry group, as the calculations will make use of it. 
+To pass the combinatorial symmetry group to the program, you have to define a `Symmetries: `-Section in the input `.ext`-file. You can see an example in the `example.ext`.
+
+The symmetries are defined as disjoint cycles on the indices of the vertices. For example, if the exchange of the first vertex with the second vertex is a valid symmetry of the polyhedron, this is denoted by `(1,2)`. It is best to provide here only a minimal generating set of the symmetry group, as the calculations will make use of it. 
 
