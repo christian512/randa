@@ -181,6 +181,7 @@ if __name__ == '__main__':
     inputs_b = list(range(3))
     outputs_a = list(range(4))
     outputs_b = list(range(2))
+    filename = '3342.ext'
     vertices = get_deterministic_behaviors_two_party(inputs_a, inputs_b, outputs_a, outputs_b)
     vertices = vertices[np.lexsort(np.rot90(vertices))]
     relabeling_generators = get_relabelling_generators(inputs_a, inputs_b, outputs_a, outputs_b)
@@ -190,4 +191,4 @@ if __name__ == '__main__':
     print(vertices)
     print(automorphisms_as_disjoint_cycles)
 
-    write_vertices_and_symmetries_to_file(vertices, automorphisms_as_disjoint_cycles)
+    write_vertices_and_symmetries_to_file(vertices, automorphisms_as_disjoint_cycles, filename)
