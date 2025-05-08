@@ -42,10 +42,10 @@ namespace panda
          bool isKeywordReducedInequalities(const std::string&) noexcept;
          /// Returns true if the string is a keyword for maps.
          bool isKeywordMaps(const std::string&) noexcept;
-         /// Returns true if the string is a keyword for vertexmaps.
-         bool isKeywordVertexMaps(const std::string&) noexcept;
          /// Returns true if the string is a keyword for names.
          bool isKeywordNames(const std::string&) noexcept;
+         /// Return true if the string is a keyword for symmetries.
+         bool isKeywordSymmetries(const std::string&) noexcept;
       }
    }
 }

@@ -8,7 +8,7 @@
 
 #include <istream>
 
-#include "maps.h"
+#include "symmetries.h"
 
 namespace panda
 {
@@ -16,8 +16,8 @@ namespace panda
    {
       namespace implementation
       {
-         /// Reads maps from file.
-         VertexMaps vertexMaps(std::istream&);
+         /// Returns symmetries
+         Symmetries symmetries(std::istream&);
       }
    }
 }

@@ -12,6 +12,7 @@
 #include "matrix.h"
 #include "names.h"
 #include "tags.h"
+#include "symmetries.h"
 
 namespace panda
 {
@@ -19,7 +20,7 @@ namespace panda
    {
       /// Helper function for adjacency decomposition.
       template <template <typename, typename> class JobManagerType, typename Integer, typename TagType>
-      void adjacencyDecomposition(int, char**, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, VertexMaps>&,TagType);
+      void adjacencyDecomposition(int, char**, const std::tuple<Matrix<Integer>, Names, Maps, Matrix<Integer>, Symmetries>&, TagType);
    }
 }
 

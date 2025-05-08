@@ -14,11 +14,10 @@
 
 namespace panda
 {
-   namespace algorithm
-   {
-      EXTERN template bool equivalenceFaceToFace(const Row<Integer>&, const Row<Integer>&, const Vertices<Integer>&, const VertexMaps&);
-      EXTERN template bool equivalenceGAP(const Row<Integer>&, const Vertices<Integer>&);
-      EXTERN template std::set<int> indicesVerticesOnFace(const Row<Integer>&, const Vertices<Integer>&);
-   }
+      EXTERN template bool Gap::initialize(Symmetries, const Vertices<Integer>&);
+      EXTERN template std::string Gap::vertex_to_string(const Vertex<Integer>&);
+      EXTERN template bool Gap::fill_lookup_table(const Vertices<Integer>&);
+      EXTERN template int Gap::get_index(const Vertex<Integer>&);
+      EXTERN template std::vector<int> Gap::equivalence(const Facets<Integer>&, const Vertices<Integer>&);
 }
 

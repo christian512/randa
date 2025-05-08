@@ -46,10 +46,3 @@ panda::JobManagerProxy<Integer, TagType>::JobManagerProxy(const Names&, const in
 {
 }
 
-template <typename Integer, typename TagType>
-panda::JobManagerProxy<Integer, TagType>::JobManagerProxy(const Names&, const int, const int, const Vertices<Integer>&, const VertexMaps&)
-:
-  communication()
-{
-}
-
