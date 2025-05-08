@@ -72,13 +72,15 @@ time.sleep(3)
 
 # Wait for GAP file to be created
 while not os.path.exists(gap_file):
-    print('Waiting for GAP file')
+    print('Waiting for GAP file created by RANDA')
     time.sleep(0.5)
 
 # Start GAP
 cmd = "gap.sh --quitonbreak {}".format(gap_file)
 gap_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
 
+# Start timer since GAP is now available
+start_time = time.time()
 
 # define behavior for receiving a SIGINT (e.g. pressing ctrl+c)
 def stop_handler(signum, frame):
@@ -95,9 +97,12 @@ signal.signal(signal.SIGINT, stop_handler)
 
 # Wait for RANDA process to finish and kill gap process
 randa_process.wait()
+end_time = time.time()
 os.killpg(os.getpgid(gap_process.pid), signal.SIGTERM)
 
 # remove FIFO files and GAP program
 os.remove(fromgap_pipe)
 os.remove(togap_pipe)
 os.remove(gap_file)
+
+print("Required time[s]: ", end_time-start_time)
