@@ -73,3 +73,4 @@ To pass the combinatorial symmetry group to the program, you have to define a `S
 
 The symmetries are defined as disjoint cycles on the indices of the vertices. For example, if the exchange of the first vertex with the second vertex is a valid symmetry of the polyhedron, this is denoted by `(1,2)`. It is best to provide here only a minimal generating set of the symmetry group, as the calculations will make use of it. 
 
+This repository includes scripts to generate bipartite Bell polytopes and cut polytopes. See `polytope_generation` folder for more information.
